@@ -1,0 +1,2 @@
+Coloca aquí los videos LSM_A.mp4 a LSM_Z.mp4 y LSM_LL.mp4.
+Ruta pública esperada: /lsm/assets/video/NOMBRE.mp4

@@ -1,0 +1,269 @@
+/* Barra izquierda independiente de tlahtolmekauan */
+
+.sidebar a {
+	text-decoration: none !important;
+}
+
+.guide-nav-group {
+	margin: 10px 0 8px;
+	border: 1px solid rgba(103, 227, 205, .18);
+	border-radius: 14px;
+	background:
+		linear-gradient(145deg, rgba(13, 49, 43, .55), rgba(7, 27, 24, .40));
+	overflow: hidden;
+}
+
+.guide-nav-group > summary,
+.guide-nav-subgroup > summary {
+	list-style: none;
+	cursor: pointer;
+	user-select: none;
+}
+
+.guide-nav-group > summary::-webkit-details-marker,
+.guide-nav-subgroup > summary::-webkit-details-marker {
+	display: none;
+}
+
+.guide-nav-group > summary {
+	position: relative;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 8px;
+	min-height: 48px;
+	padding: 10px 40px 10px 14px;
+	color: #d8ebe6;
+	background: rgba(103, 227, 205, .035);
+}
+
+.guide-nav-group > summary::after {
+	content: "+";
+	position: absolute;
+	right: 14px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 22px;
+	height: 22px;
+	display: grid;
+	place-items: center;
+	border: 1px solid rgba(103, 227, 205, .28);
+	border-radius: 7px;
+	color: var(--aqua, #67e3cd);
+	font-weight: 700;
+	line-height: 1;
+}
+
+.guide-nav-group[open] > summary::after {
+	content: "−";
+}
+
+.guide-nav-group[open] > summary {
+	border-bottom: 1px solid rgba(103, 227, 205, .14);
+	background: rgba(103, 227, 205, .07);
+}
+
+.guide-nav-title {
+	font-size: .88rem;
+	font-weight: 750;
+	letter-spacing: .015em;
+}
+
+.guide-nav-hint {
+	font-size: .64rem;
+	color: #789990;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+}
+
+.guide-nav-body {
+	display: grid;
+	gap: 6px;
+	padding: 8px;
+}
+
+.guide-nav-intro {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 5px;
+	padding-bottom: 3px;
+}
+
+.guide-nav-intro .guide-sub-link {
+	min-height: 38px;
+	display: flex;
+	align-items: center;
+	padding: 7px 9px;
+	border: 1px solid rgba(103, 227, 205, .11);
+	border-radius: 9px;
+	background: rgba(255,255,255,.018);
+	font-size: .72rem;
+}
+
+.guide-nav-subgroup {
+	border: 1px solid rgba(103, 227, 205, .10);
+	border-radius: 10px;
+	background: rgba(0, 0, 0, .08);
+	overflow: hidden;
+}
+
+.guide-nav-subgroup > summary {
+	position: relative;
+	padding: 9px 32px 9px 11px;
+	color: #aac5be;
+	font-size: .76rem;
+	font-weight: 700;
+	letter-spacing: .01em;
+}
+
+.guide-nav-subgroup > summary::after {
+	content: "›";
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--aqua, #67e3cd);
+	font-size: 1rem;
+	transition: transform .16s ease;
+}
+
+.guide-nav-subgroup[open] > summary::after {
+	transform: translateY(-50%) rotate(90deg);
+}
+
+.guide-nav-subgroup[open] > summary {
+	color: #e7f7f3;
+	background: rgba(103, 227, 205, .055);
+}
+
+.guide-sub-link {
+	display: block;
+	padding: 6px 10px;
+	color: #91ada6 !important;
+	font-size: .72rem;
+	line-height: 1.22;
+	border-radius: 8px;
+	overflow-wrap: anywhere;
+	transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+.guide-nav-subgroup > .guide-sub-link {
+	margin: 2px 6px;
+	padding-left: 12px;
+	border-left: 2px solid rgba(103, 227, 205, .12);
+	border-radius: 0 7px 7px 0;
+}
+
+.guide-nav-body > .guide-sub-link {
+	margin: 0 2px;
+	border: 1px solid rgba(103, 227, 205, .09);
+	background: rgba(255,255,255,.012);
+}
+
+.guide-sub-link:hover,
+.guide-sub-link:focus-visible {
+	color: #ffffff !important;
+	background: rgba(103, 227, 205, .09);
+	transform: translateX(1px);
+	outline: none;
+}
+
+.sidebar-card-link {
+	color: inherit !important;
+	text-decoration: none !important;
+}
+
+.sidebar-card-link:hover,
+.sidebar-card-link:focus-visible {
+	border-color: rgba(103, 227, 205, .38);
+	background: linear-gradient(
+		145deg,
+		rgba(18, 63, 55, .88),
+		rgba(7, 31, 27, .78)
+	);
+	outline: none;
+}
+
+.sidebar-nav .sidebar-card {
+	margin-top: 7px;
+}
+
+@media (max-width: 1180px) {
+	.guide-nav-intro {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Corrección móvil: permite ver y abrir Náhuatl Patrimonial */
+@media (max-width: 760px) {
+	.sidebar-nav {
+		display: grid !important;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 8px;
+		overflow: visible !important;
+		width: 100%;
+	}
+
+	.sidebar-nav > .nav-item {
+		min-width: 0 !important;
+		width: 100%;
+		padding: 10px 6px;
+	}
+
+	/*
+	 * El desplegable del manual debe ocupar una fila completa.
+	 * Evita que overflow-y:hidden de styles.css lo recorte.
+	 */
+	.sidebar-nav > .guide-nav-group {
+		grid-column: 1 / -1;
+		width: 100%;
+		min-width: 0;
+		overflow: visible;
+		margin: 8px 0 0;
+	}
+
+	.guide-nav-group[open] {
+		overflow: visible;
+	}
+
+	.guide-nav-body {
+		width: 100%;
+		max-width: 100%;
+		overflow: visible;
+		box-sizing: border-box;
+	}
+
+	.guide-nav-subgroup,
+	.guide-sub-link {
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	/* Las tarjetas siguen ocultas en celular para no alargar demasiado la cabecera. */
+	.sidebar-nav > .sidebar-card,
+	.sidebar > .sidebar-card,
+	.sidebar-note {
+		display: none !important;
+	}
+}
+
+@media (max-width: 480px) {
+	.sidebar-nav {
+		grid-template-columns: repeat(5, minmax(44px, 1fr));
+		gap: 6px;
+	}
+
+	.guide-nav-group > summary {
+		min-height: 46px;
+		padding-left: 12px;
+		padding-right: 38px;
+	}
+
+	.guide-nav-hint {
+		display: none;
+	}
+
+	.guide-nav-intro {
+		grid-template-columns: 1fr;
+	}
+}

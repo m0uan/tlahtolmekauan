@@ -1,0 +1,32 @@
+MACHOTE PARA USAR UN VIDEO DE YOUTUBE EN EL ALFABETO LSM
+
+Archivo que se modifica:
+lsm/assets/js/alfabeto-lsm.js
+
+1. Busca el objeto de la letra dentro de VIDEOS_ALFABETO.
+
+Ejemplo actual con MP4 local:
+{ letra: "A", tipo: "local", archivo: "LSM_A.mp4" }
+
+2. Sustitúyelo por:
+{ letra: "A", tipo: "youtube", youtubeId: "ID_DEL_VIDEO" }
+
+Ejemplo:
+URL normal de YouTube:
+https://www.youtube.com/watch?v=AbCdEf12345
+
+El ID es solamente:
+AbCdEf12345
+
+Registro resultante:
+{ letra: "A", tipo: "youtube", youtubeId: "AbCdEf12345" }
+
+También funciona con enlaces cortos:
+https://youtu.be/AbCdEf12345
+
+No pegues la URL completa dentro de youtubeId. Pega únicamente el identificador.
+
+Para volver al archivo local:
+{ letra: "A", tipo: "local", archivo: "LSM_A.mp4" }
+
+El sistema utiliza youtube-nocookie.com y reproduce el video incrustado dentro del sitio.

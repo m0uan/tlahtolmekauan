@@ -1,0 +1,9 @@
+Corrección aplicada a la reconstrucción Náhuatl → Español:
+
+ni mitz tlahtozneki  → quiero a ti hablar
+ni mitz makazneki    → quiero a ti dar
+ni mitz makazueli    → puedo a ti dar
+ni mitz makazuihkili → debo a ti dar
+
+No se ha aplicado todavía naturalización del español.
+La interfaz visual y la dirección Español → Náhuatl permanecen sin cambios.

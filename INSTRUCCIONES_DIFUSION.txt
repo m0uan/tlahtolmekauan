@@ -1,0 +1,9 @@
+ARCHIVOS DE DIFUSIÓN DE TLAHTOLMEKAUAN
+
+1. Renombra index_difusion_completa.html como index.html.
+2. Coloca robots.txt y sitemap.xml en la raíz del proyecto.
+3. No actives Google Analytics hasta tener tu identificador real G-XXXXXXXXXX.
+4. Cuando Google Search Console te dé un código, sustituye TU_CODIGO_DE_GOOGLE.
+5. Cuando Bing te dé un código, sustituye TU_CODIGO_DE_BING.
+6. Cada artículo futuro debe tener una URL propia y agregarse a sitemap.xml.
+7. Las estadísticas visibles no inventan cifras: solo muestran datos ciertos o de sesión.

@@ -1,0 +1,358 @@
+.license-panel {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		width: min(1100px, calc(100% - 32px));
+		margin: 18px auto;
+		padding: 18px 22px;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 18px;
+		background: rgba(18, 33, 27, 0.92);
+		box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
+		color: #ffffff;
+	}
+
+	.license-panel__info {
+		display: grid;
+		gap: 3px;
+	}
+
+	.license-panel__label {
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		opacity: 0.72;
+	}
+
+	#licenseStatus {
+		font-size: 1.08rem;
+	}
+
+	#licenseDetail {
+		font-size: 0.9rem;
+		opacity: 0.82;
+	}
+
+	.license-panel__button,
+	.license-action,
+	.license-card__buy {
+		border: 0;
+		border-radius: 12px;
+		padding: 11px 17px;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+		transition:
+			transform 0.16s ease,
+			filter 0.16s ease,
+			background 0.16s ease;
+	}
+
+	.license-panel__button,
+	.license-action--primary,
+	.license-card__buy {
+		background: #f0c451;
+		color: #1d291f;
+	}
+
+	.license-panel__button:hover,
+	.license-action:hover,
+	.license-card__buy:hover {
+		transform: translateY(-1px);
+		filter: brightness(1.06);
+	}
+
+	.license-modal {
+		position: fixed;
+		inset: 0;
+		z-index: 10000;
+		display: none;
+		place-items: center;
+		padding: 20px;
+	}
+
+	.license-modal.is-open {
+		display: grid;
+	}
+
+	.license-modal__backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.72);
+		backdrop-filter: blur(5px);
+	}
+
+	.license-modal__content {
+		position: relative;
+		z-index: 1;
+		width: min(1050px, 100%);
+		max-height: 92vh;
+		overflow-y: auto;
+		padding: 30px;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		border-radius: 24px;
+		background:
+			linear-gradient(
+				145deg,
+				rgba(30, 54, 43, 0.99),
+				rgba(12, 25, 20, 0.99)
+			);
+		box-shadow: 0 26px 80px rgba(0, 0, 0, 0.48);
+		color: #ffffff;
+	}
+
+	.license-modal__close {
+		position: absolute;
+		top: 12px;
+		right: 16px;
+		width: 42px;
+		height: 42px;
+		border: 0;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+		font-size: 1.8rem;
+		cursor: pointer;
+	}
+
+	.license-modal__header {
+		max-width: 720px;
+		margin-bottom: 24px;
+	}
+
+	.license-modal__header h2 {
+		margin: 4px 0 10px;
+		font-size: clamp(1.8rem, 4vw, 2.7rem);
+	}
+
+	.license-modal__header p {
+		margin: 0;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.76);
+	}
+
+	.license-modal__eyebrow {
+		color: #f0c451 !important;
+		font-size: 0.8rem;
+		font-weight: 800;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.license-options {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(150px, 1fr));
+		gap: 14px;
+	}
+
+	.license-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		min-height: 240px;
+		padding: 20px;
+		border: 1px solid rgba(255, 255, 255, 0.13);
+		border-radius: 17px;
+		background: rgba(255, 255, 255, 0.06);
+	}
+
+	.license-card--featured {
+		border-color: rgba(240, 196, 81, 0.75);
+		background: rgba(240, 196, 81, 0.11);
+	}
+
+	.license-card h3 {
+		margin: 4px 0 10px;
+	}
+
+	.license-card p {
+		color: rgba(255, 255, 255, 0.75);
+		line-height: 1.45;
+	}
+
+	.license-card__price {
+		margin: 0 0 8px;
+		color: #ffffff !important;
+		font-size: 1.4rem;
+		font-weight: 800;
+	}
+
+	.license-card span {
+		margin-top: auto;
+		color: #f0c451;
+		font-weight: 700;
+	}
+
+	.license-card__buy {
+		margin-top: auto;
+	}
+
+	.license-card__badge {
+		position: absolute;
+		top: -10px;
+		right: 12px;
+		padding: 4px 9px;
+		border-radius: 999px;
+		background: #f0c451;
+		color: #1d291f !important;
+		font-size: 0.7rem;
+	}
+
+	.license-activation {
+		margin-top: 26px;
+		padding: 22px;
+		border-radius: 17px;
+		background: rgba(0, 0, 0, 0.18);
+	}
+
+	.license-activation h3 {
+		margin-top: 0;
+		margin-bottom: 5px;
+	}
+
+	.license-activation > p {
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	.license-activation__buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 16px;
+	}
+
+	.license-action {
+		background: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.license-action--primary {
+		color: #1d291f;
+	}
+
+	.machine-id-box {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 10px;
+		margin-top: 16px;
+		padding: 13px;
+		border-radius: 12px;
+		background: rgba(0, 0, 0, 0.25);
+	}
+
+	.machine-id-box code {
+		overflow-wrap: anywhere;
+		color: #f0c451;
+	}
+
+	.machine-id-box button {
+		border: 0;
+		border-radius: 8px;
+		padding: 8px 11px;
+		cursor: pointer;
+	}
+
+	.license-message {
+		min-height: 24px;
+		margin: 15px 0 0;
+		font-weight: 700;
+	}
+
+	.license-message.is-success {
+		color: #8be0a5;
+	}
+
+	.license-message.is-error {
+		color: #ff9d9d;
+	}
+
+	body.license-modal-open {
+		overflow: hidden;
+	}
+
+	@media (max-width: 950px) {
+		.license-options {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 600px) {
+		.license-panel {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.license-panel__button {
+			width: 100%;
+		}
+
+		.license-options {
+			grid-template-columns: 1fr;
+		}
+
+		.license-modal__content {
+			padding: 24px 17px;
+		}
+
+		.machine-id-box {
+			grid-template-columns: 1fr;
+		}
+	}
+
+
+   #selectLicenseFile:not(:disabled) {
+		background: #f0c451 !important;
+		color: #1d291f !important;
+		opacity: 1 !important;
+		cursor: pointer !important;
+		pointer-events: auto !important;
+	}
+
+.owner-access {
+	margin-top: 22px;
+	padding-top: 20px;
+	border-top: 1px solid rgba(255, 255, 255, 0.14);
+   }
+
+
+   .owner-inbox {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid rgba(255,255,255,.12);
+   }
+
+   .owner-access input {
+	width: 100%;
+	box-sizing: border-box;
+	margin: 8px 0 12px;
+	padding: 12px 14px;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.24);
+	color: #fff;
+	font: inherit;
+   }
+
+#activateOwner {
+	   background: #f0c451 !important;
+	   color: #1d291f !important;
+	   opacity: 1 !important;
+	   cursor: pointer !important;
+	   pointer-events: auto !important;
+	   filter: none !important;
+   }
+
+   #activateOwner:hover {
+	   filter: brightness(1.06) !important;
+	   transform: translateY(-1px);
+   }
+
+   #activateOwner:disabled {
+	   background: #d8b44d !important;
+	   color: #1d291f !important;
+	   opacity: 0.78 !important;
+	   cursor: wait !important;
+	   pointer-events: none !important;
+   }

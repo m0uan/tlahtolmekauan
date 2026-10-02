@@ -1,0 +1,11 @@
+Versión v2.8
+
+Corrección confirmada:
+- Se eliminó cualquier archivo __pycache__ y .pyc anterior.
+- El código fuente no usa la variable is_potential_action.
+- Puerto inicial nuevo: 8875, para evitar conectarse a un servidor viejo.
+
+Pruebas:
+ni mitz tlahtozneki -> quiero a ti hablar
+ni kochizneki -> quiero dormir
+ni mitz makazueli -> puedo a ti dar

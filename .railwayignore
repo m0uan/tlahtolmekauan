@@ -1,0 +1,20 @@
+# Archivos locales y temporales que Railway no necesita
+.git/
+.gitignore
+__pycache__/
+*.py[cod]
+.venv/
+.testvenv/
+venv/
+env/
+logs/
+*.log
+*.zip
+*.7z
+*.rar
+
+# Prueba temporal: no enviar videos LSM a Railway
+lsm/assets/video/
+
+# Copia independiente del proyecto de licencias
+tlahtolmekauan_licencias_v2/

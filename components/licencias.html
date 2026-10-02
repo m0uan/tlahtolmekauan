@@ -1,0 +1,174 @@
+<!-- PANEL DE LICENCIA -->
+  <!-- ESTADO DE LICENCIA -->
+  <section class="license-panel" id="licensePanel">
+   <div class="license-panel__info">
+	<span class="license-panel__label">
+	 Estado de la licencia
+	</span>
+	<strong id="licenseStatus">
+	 Comprobando licencia…
+	</strong>
+	<span id="licenseDetail">
+	</span>
+   </div>
+   <button class="license-panel__button" id="openLicenseModal" type="button">
+	Comprar / Activar licencia
+   </button>
+  </section>
+  <!-- VENTANA DE LICENCIA -->
+  <!-- MODAL DE LICENCIA -->
+  <div aria-hidden="true" aria-labelledby="licenseModalTitle" aria-modal="true" class="license-modal" id="licenseModal" role="dialog">
+   <div class="license-modal__backdrop" data-close-license-modal="">
+   </div>
+   <div class="license-modal__content">
+	<button aria-label="Cerrar" class="license-modal__close" id="closeLicenseModal" type="button">
+	 ×
+	</button>
+	<header class="license-modal__header">
+	 <p class="license-modal__eyebrow">
+	  Licencias del traductor
+	 </p>
+	 <h2 id="licenseModalTitle">
+	  Elige la licencia adecuada
+	 </h2>
+	 <p>
+	  La versión gratuita permite hasta 10 traducciones diarias,
+				compartidas entre ambos sentidos de traducción.
+	 </p>
+	</header>
+	<div class="license-options">
+	 <article class="license-card">
+	  <h3>
+	   Gratuita
+	  </h3>
+	  <p class="license-card__price">
+	   $0
+	  </p>
+	  <p>
+	   10 traducciones por día
+	  </p>
+	  <span>
+	   Ya incluida
+	  </span>
+	 </article>
+	 <article class="license-card">
+	  <h3>
+	   7 días
+	  </h3>
+	  <p class="license-card__price">
+	   $99 MXN
+	  </p>
+	  <p>
+	   Traducciones ilimitadas durante 7 días
+	  </p>
+	  <button class="license-card__buy" data-license-plan="7_days" type="button">
+	   Comprar
+	  </button>
+	 </article>
+	 <article class="license-card">
+	  <h3>
+	   30 días
+	  </h3>
+	  <p class="license-card__price">
+	   $199 MXN
+	  </p>
+	  <p>
+	   Traducciones ilimitadas durante 30 días
+	  </p>
+	  <button class="license-card__buy" data-license-plan="30_days" type="button">
+	   Comprar
+	  </button>
+	 </article>
+	 <article class="license-card">
+	  <h3>
+	   90 días
+	  </h3>
+	  <p class="license-card__price">
+	   $399 MXN
+	  </p>
+	  <p>
+	   Traducciones ilimitadas durante 90 días
+	  </p>
+	  <button class="license-card__buy" data-license-plan="90_days" type="button">
+	   Comprar
+	  </button>
+	 </article>
+	 <article class="license-card license-card--featured">
+	  <span class="license-card__badge">
+	   Mejor opción
+	  </span>
+	  <h3>
+	   1 año
+	  </h3>
+	  <p class="license-card__price">
+	   $999 MXN
+	  </p>
+	  <p>
+	   Traducciones ilimitadas durante 365 días
+	  </p>
+	  <button class="license-card__buy" data-license-plan="365_days" type="button">
+	   Comprar
+	  </button>
+	 </article>
+	</div>
+	<section class="license-activation">
+	 <h3>
+	  ¿Ya tienes una licencia?
+	 </h3>
+	 <p>
+	  Selecciona el archivo JSON que recibiste al adquirirla.
+	 </p>
+	 <input accept=".json,application/json" hidden="" id="licenseFile" type="file"/>
+	 <div class="license-activation__buttons">
+	  <button class="license-action license-action--primary" id="selectLicenseFile" type="button">
+	   Seleccionar y activar licencia
+	  </button>
+	  <button class="license-action" id="showMachineId" type="button">
+	   Ver identificador del equipo
+	  </button>
+	 </div>
+	 <div class="machine-id-box" hidden="" id="machineIdBox">
+	  <span>
+	   Identificador del equipo
+	  </span>
+	  <code id="machineIdValue">
+	  </code>
+	  <button id="copyMachineId" type="button">
+	   Copiar
+	  </button>
+	 </div>
+	 <div class="owner-access">
+	  <h3>
+	   Licencia de Propietario
+	  </h3>
+	  <p>
+	   Escribe la clave privada configurada como OWNER_ACCESS_CODE en Railway.
+	  </p>
+	  <input autocomplete="off" id="ownerCode" placeholder="Código privado del propietario" type="password"/>
+	  <div class="license-activation__buttons">
+	   <button class="license-action license-action--primary" id="activateOwner" type="button">
+		Activar Licencia de Propietario
+	   </button>
+	  </div>
+	  <div class="owner-inbox" id="ownerInbox" hidden>
+	   <div class="owner-inbox__header">
+		<h3>Bandeja de mensajes <span class="owner-inbox__count" id="ownerInboxBadge" hidden>0</span></h3>
+		<button class="license-action" id="refreshOwnerInbox" type="button">Actualizar</button>
+	   </div>
+	   <div class="owner-inbox__tools" aria-label="Herramientas de la bandeja">
+		<input id="ownerInboxSearch" type="search" placeholder="Buscar por nombre, correo o contenido" autocomplete="off"/>
+		<select id="ownerInboxCategory" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option></select>
+		<select id="ownerInboxFilter" aria-label="Filtrar por estado">
+		 <option value="active">Activos</option><option value="unread">Sin leer</option><option value="favorite">Importantes</option><option value="archived">Archivados</option><option value="all">Todos</option>
+		</select>
+	   </div>
+	   <p id="ownerInboxStatus" aria-live="polite">Cargando mensajes…</p>
+	   <div class="owner-inbox__list" id="ownerInboxList"></div>
+	  </div>
+
+	 </div>
+	 <p aria-live="polite" class="license-message" id="licenseMessage" role="status">
+	 </p>
+	</section>
+   </div>
+  </div>

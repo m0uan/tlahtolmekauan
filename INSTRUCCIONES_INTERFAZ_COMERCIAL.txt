@@ -1,0 +1,31 @@
+INTERFAZ COMERCIAL DEL TRADUCTOR NÁHUATL
+========================================
+
+Archivos nuevos:
+- traductor_app.py
+- license_manager.py
+- Nahuatl_Translator(155).py
+
+Instalación dentro del proyecto:
+1. Copie los tres archivos en la carpeta completa del traductor.
+2. Conserve en esa misma carpeta todos los módulos y diccionarios originales.
+3. Instale la dependencia criptográfica:
+
+   python -m pip install cryptography
+
+4. Inicie la aplicación con:
+
+   python traductor_app.py
+
+La interfaz incorpora:
+- contador visible de 10 traducciones diarias;
+- conteo compartido para Español → Náhuatl y Náhuatl → Español;
+- aviso al agotarse el límite;
+- activación de licencias desde un archivo JSON;
+- visualización y copia del identificador del equipo;
+- pantalla Acerca del Traductor;
+- estado de licencia gratuita, temporal o permanente.
+
+IMPORTANTE
+El generador y la clave privada deben conservarse fuera de la carpeta pública.
+No incluya el paquete privado al distribuir o compilar el programa.

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html lang="es-MX">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5W6VDYE56X"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5W6VDYE56X");
+  </script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#071b19" name="theme-color"/>
+<meta content="Catálogo visual consultable de Lengua de Señas Mexicana organizado por nombre y configuración manual." name="description"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<link href="https://speak-nahuatl.com/lsm/diccionario/" rel="canonical"/>
+<title>Diccionario visual LSM</title>
+<link href="../assets/css/lsm.css" rel="stylesheet"/>
+<script defer="" src="../assets/js/catalogo-lsm.js"></script>
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="/lsm/">
+<span class="brand-mark">LSM</span>
+<span><strong>Lengua de Señas Mexicana</strong><small>Diccionario visual</small></span>
+</a>
+<nav aria-label="Navegación principal" class="main-nav"><a href="/lsm/">Inicio</a><a href="/lsm/alfabeto/">Alfabeto</a><a aria-current="page" href="/lsm/diccionario/">Diccionario</a><a href="/lsm/conceptos/">Conceptos</a><a href="/lsm/configuraciones/">Configuraciones</a><a href="/">Náhuatl</a></nav>
+</div>
+</header>
+<main>
+<section class="page-hero">
+<p class="eyebrow">CATÁLOGO BASE</p>
+<h1>Diccionario visual LSM</h1>
+<p>
+        Cada ficha conserva el nombre y el código asociados en el PDF. Mientras una imagen
+        no exista, se mostrará un marcador reservado con la ruta exacta donde deberá colocarse.
+      </p>
+</section>
+<section aria-labelledby="catalog-title" class="section catalog-shell">
+<div class="section-head">
+<h2 id="catalog-title">Entradas del diccionario</h2>
+<p>Busca por término, código o configuración manual.</p>
+</div>
+<div class="catalog-controls">
+<div class="search-field">
+<label for="sign-search">Buscar una seña</label>
+<input autocomplete="off" id="sign-search" placeholder="Ejemplo: abrazar, B-P 8, familia…" type="search"/>
+</div>
+<div aria-label="Filtros por configuración manual" class="filter-list">
+<button class="filter-button is-active" data-configuration="todas" type="button">Todas</button>
+<button class="filter-button" data-configuration="B-P" type="button">B-Palma</button>
+<button class="filter-button" data-configuration="5-G" type="button">5-Garra</button>
+<button class="filter-button" data-configuration="A" type="button">A</button>
+<button class="filter-button" data-configuration="S" type="button">S</button>
+<button class="filter-button" data-configuration="L" type="button">L</button>
+<button class="filter-button" data-configuration="C" type="button">C</button>
+<button class="filter-button" data-configuration="O" type="button">O</button>
+</div>
+</div>
+<p aria-live="polite" class="catalog-status" id="catalog-status">Cargando catálogo…</p>
+<div class="sign-grid" id="sign-grid"></div>
+<button class="button load-more" id="load-more" type="button">Mostrar más</button>
+</section>
+</main>
+<footer class="site-footer">
+<div class="footer-inner">© 2026 mouan · Diccionario visual LSM</div>
+</footer>
+</body>
+</html>

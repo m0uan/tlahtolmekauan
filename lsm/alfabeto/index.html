@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="es-MX">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-5W6VDYE56X"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-5W6VDYE56X");
+  </script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Alfabeto visual de Lengua de Señas Mexicana mediante videos breves de cada letra." name="description"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<link href="https://speak-nahuatl.com/lsm/alfabeto/" rel="canonical"/>
+<link href="/lsm/assets/img/favicon.ico" rel="icon" type="image/x-icon"/>
+<title>Alfabeto manual | LSM</title>
+<link href="/lsm/assets/css/lsm.css" rel="stylesheet"/>
+<script defer="" src="/lsm/assets/js/alfabeto-lsm.js"></script>
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a class="brand" href="/lsm/">
+<span class="brand-mark">LSM</span>
+<span>
+<strong>Lengua de Señas Mexicana</strong>
+<small>Alfabeto visual</small>
+</span>
+</a>
+<nav aria-label="Navegación principal" class="main-nav"><a href="/lsm/">Inicio</a><a aria-current="page" href="/lsm/alfabeto/">Alfabeto</a><a href="/lsm/diccionario/">Diccionario</a><a href="/lsm/conceptos/">Conceptos</a><a href="/lsm/configuraciones/">Configuraciones</a><a href="/">Náhuatl</a></nav>
+</div>
+</header>
+<main>
+<section class="page-hero">
+<p class="eyebrow">DACTILOLOGÍA EN VIDEO</p>
+<h1>Alfabeto manual</h1>
+<p>
+        Selecciona una letra para observar el movimiento de la mano.
+        Cada video se reproduce automáticamente, sin sonido y en bucle.
+      </p>
+</section>
+<section aria-labelledby="visor-titulo" class="alphabet-layout">
+<article class="alphabet-player-card">
+<div class="alphabet-player-heading">
+<div>
+<p class="eyebrow">LETRA SELECCIONADA</p>
+<h2 id="visor-titulo">
+              Letra <span id="letra-seleccionada">A</span>
+</h2>
+</div>
+<button class="button alphabet-replay" id="repetir-video" type="button">
+            Repetir
+          </button>
+</div>
+<div class="alphabet-video-frame">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" class="alphabet-youtube-frame" hidden="" id="youtube-alfabeto" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="" title="Video de la letra seleccionada en YouTube"></iframe>
+<div class="alphabet-video-error" hidden="" id="error-video">
+<strong>Video no disponible</strong>
+<span id="ruta-video-faltante"></span>
+</div>
+</div>
+<p aria-live="polite" class="alphabet-status" id="estado-video">
+          Selecciona una letra para reproducir su video.
+        </p>
+</article>
+<section aria-labelledby="letras-titulo" class="alphabet-selector">
+<div class="section-head">
+<p class="eyebrow">ALFABETO</p>
+<h2 id="letras-titulo">Selecciona una letra</h2>
+<p>
+            Pulsa una letra para observar su configuración manual y su movimiento.
+          </p>
+</div>
+<div aria-label="Letras del alfabeto LSM" class="alphabet-grid" id="cuadricula-alfabeto" role="list"></div>
+</section>
+</section>
+<noscript>
+<p class="notice">
+        Esta sección necesita JavaScript para cambiar entre los videos.
+      </p>
+</noscript>
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+      © 2026 mouan · Proyecto LSM integrado en speak-nahuatl.com
+    </div>
+</footer>
+</body>
+</html>

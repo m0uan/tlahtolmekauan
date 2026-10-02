@@ -1,0 +1,61 @@
+﻿# Licencias emitidas
+licencia_*.json
+license_*.json
+
+# Documentación e informes internos sobre licencias
+LICENCIAS_V2.txt
+RESULTADO_CORRECCION_LICENCIAS.txt
+
+# Claves privadas y certificados privados
+*clave_privada*
+*private_key*
+*.key
+*.p12
+*.pfx
+
+# Generadores privados
+generar_licencia*.py
+
+# Variables privadas
+.env
+.env.*
+
+# Respaldos y archivos comprimidos
+*.zip
+*.7z
+*.rar
+*before_GitHub*
+*respaldo*
+*backup*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+*.sublime-workspace
+logs/
+# Copia independiente del proyecto de licencias
+tlahtolmekauan_licencias_v2/
+
+# Copia independiente del proyecto de licencias
+tlahtolmekauan_licencias_v2/
+
+# Estado local de licencia
+license.json
+usage_state.json
+license_warnings.log
+
+# Archivos auxiliares locales
+dir
+dir.txt
+.railwayignore.txt
+
+# Videos LSM excluidos del repositorio
+lsm/assets/video/*.mp4

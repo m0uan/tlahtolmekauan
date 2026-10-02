@@ -1,0 +1,429 @@
+[
+  {
+    "id": "concepto-humano",
+    "slug": "humano",
+    "etiqueta_principal": "ser humano",
+    "terminos_equivalentes": [
+      "ser humano",
+      "persona",
+      "individuo",
+      "humano",
+      "alguien"
+    ],
+    "terminos_relacionados": [
+      "ser",
+      "ente"
+    ],
+    "terminos_especificos": [
+      "hombre",
+      "mujer",
+      "niño",
+      "niña",
+      "adulto",
+      "adulta",
+      "adolescente",
+      "bebé",
+      "anciano",
+      "anciana"
+    ],
+    "terminos_colectivos": [
+      "gente",
+      "personas",
+      "humanidad",
+      "población"
+    ],
+    "descripcion": "Concepto general que representa a un ser humano, independientemente de su postura, ubicación o desplazamiento.",
+    "imagen": "humano.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-superficie-horizontal-vertical",
+    "slug": "superficie-horizontal-vertical",
+    "etiqueta_principal": "superficie horizontal o vertical",
+    "terminos_equivalentes": [
+      "superficie horizontal",
+      "superficie vertical",
+      "plano horizontal",
+      "plano vertical"
+    ],
+    "terminos_relacionados": [
+      "superficie",
+      "plano",
+      "posición horizontal",
+      "posición vertical"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [],
+    "descripcion": "Representación de una superficie colocada horizontal o verticalmente.",
+    "imagen": "superficie-horizontal-vertical.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-limites-perimetros-filos",
+    "slug": "limites-perimetros-filos",
+    "etiqueta_principal": "límites, perímetros y filos",
+    "terminos_equivalentes": [
+      "límite",
+      "límites",
+      "perímetro",
+      "perímetros",
+      "filo",
+      "filos"
+    ],
+    "terminos_relacionados": [
+      "borde",
+      "contorno",
+      "orilla",
+      "objetos afilados"
+    ],
+    "terminos_especificos": [
+      "navaja",
+      "cuchilla"
+    ],
+    "terminos_colectivos": [],
+    "descripcion": "Concepto relacionado con límites, contornos y objetos que presentan filo.",
+    "imagen": "limites-perimetros-filos.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-dos-personas",
+    "slug": "dos-personas",
+    "etiqueta_principal": "dos personas",
+    "terminos_equivalentes": [
+      "dos personas",
+      "pareja de personas",
+      "dos individuos"
+    ],
+    "terminos_relacionados": [
+      "pareja",
+      "dupla",
+      "ambos",
+      "juntos"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [
+      "pareja"
+    ],
+    "descripcion": "Representación de dos personas que se encuentran o se desplazan juntas.",
+    "imagenes": [
+      {
+        "tipo": "principal",
+        "archivo": "dos-personas-principal.webp",
+        "estado": "disponible",
+        "alt": "Representación principal de dos personas."
+      },
+      {
+        "tipo": "auxiliar",
+        "archivo": "dos-personas-auxiliar.webp",
+        "estado": "disponible",
+        "alt": "Representación auxiliar de dos personas."
+      }
+    ],
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-entidad-movible",
+    "slug": "entidad-movible",
+    "etiqueta_principal": "entidad movible",
+    "terminos_equivalentes": [
+      "entidad movible",
+      "ser movible",
+      "elemento movible"
+    ],
+    "terminos_relacionados": [
+      "movimiento",
+      "desplazamiento",
+      "animal"
+    ],
+    "terminos_especificos": [
+      "animal de cuatro patas",
+      "cuadrúpedo"
+    ],
+    "terminos_colectivos": [],
+    "descripcion": "Entidad capaz de desplazarse o permanecer ubicada en un lugar.",
+    "imagen": "entidad-movible.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-tres-personas",
+    "slug": "tres-personas",
+    "etiqueta_principal": "tres personas",
+    "terminos_equivalentes": [
+      "tres personas",
+      "tres individuos",
+      "grupo de tres personas"
+    ],
+    "terminos_relacionados": [
+      "trío",
+      "grupo de tres"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [
+      "trío"
+    ],
+    "descripcion": "Representación de tres personas reunidas, ubicadas o en desplazamiento.",
+    "imagen": "tres-personas.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-cuatro-personas",
+    "slug": "cuatro-personas",
+    "etiqueta_principal": "cuatro personas",
+    "terminos_equivalentes": [
+      "cuatro personas",
+      "cuatro individuos",
+      "grupo de cuatro personas"
+    ],
+    "terminos_relacionados": [
+      "grupo de cuatro"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [
+      "cuarteto"
+    ],
+    "descripcion": "Representación de cuatro personas reunidas, ubicadas o en desplazamiento.",
+    "imagen": "cuatro-personas.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 65
+    }
+  },
+  {
+    "id": "concepto-objetos-en-monton",
+    "slug": "objetos-en-monton",
+    "etiqueta_principal": "objetos en montón",
+    "terminos_equivalentes": [
+      "objetos en montón",
+      "objetos amontonados",
+      "objetos agrupados"
+    ],
+    "terminos_relacionados": [
+      "montón",
+      "acumulación",
+      "grupo de objetos"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [
+      "montón",
+      "conjunto"
+    ],
+    "descripcion": "Conjunto de objetos acumulados o agrupados en forma de montón.",
+    "imagen": "objetos-en-monton.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-entidad-difusa-objetos-finos",
+    "slug": "entidad-difusa-objetos-finos",
+    "etiqueta_principal": "entidad difusa u objeto fino",
+    "terminos_equivalentes": [
+      "entidad difusa",
+      "objeto fino",
+      "objetos finos"
+    ],
+    "terminos_relacionados": [
+      "expansión",
+      "dispersión",
+      "material fino"
+    ],
+    "terminos_especificos": [
+      "papel",
+      "tela"
+    ],
+    "terminos_colectivos": [],
+    "descripcion": "Representación de una entidad que se expande o de objetos delgados, como papel o tela.",
+    "imagen": "entidad-difusa-objetos-finos.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-objetos-curvos",
+    "slug": "objetos-curvos",
+    "etiqueta_principal": "objetos curvos",
+    "terminos_equivalentes": [
+      "objeto curvo",
+      "objetos curvos",
+      "forma curva"
+    ],
+    "terminos_relacionados": [
+      "curva",
+      "arqueado",
+      "circular"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [],
+    "descripcion": "Representación de objetos o entidades con forma curva.",
+    "imagen": "objetos-curvos.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-entidad-multiple-alas-helices-escaleras-cercas",
+    "slug": "entidad-multiple-alas-helices-escaleras-cercas",
+    "etiqueta_principal": "entidad múltiple",
+    "terminos_equivalentes": [
+      "entidad múltiple",
+      "personas múltiples",
+      "grupo de personas"
+    ],
+    "terminos_relacionados": [
+      "múltiple",
+      "conjunto",
+      "elementos repetidos"
+    ],
+    "terminos_especificos": [
+      "alas",
+      "hélices",
+      "escaleras",
+      "cercas"
+    ],
+    "terminos_colectivos": [
+      "personas",
+      "grupo"
+    ],
+    "descripcion": "Representación de entidades múltiples y de estructuras repetidas, como alas, hélices, escaleras o cercas.",
+    "imagen": "entidad-multiple-alas-helices-escaleras-cercas.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-acompanamiento-persecucion",
+    "slug": "acompanamiento-persecucion",
+    "etiqueta_principal": "acompañamiento o persecución",
+    "terminos_equivalentes": [
+      "acompañamiento",
+      "persecución"
+    ],
+    "terminos_relacionados": [
+      "acompañar",
+      "perseguir",
+      "seguir",
+      "ir detrás"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [],
+    "descripcion": "Relación en la que una entidad acompaña, sigue o persigue a otra.",
+    "imagen": "acompanamiento-persecucion.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-volante-tubo-cuerda",
+    "slug": "volante-tubo-cuerda",
+    "etiqueta_principal": "volante, tubo o cuerda",
+    "terminos_equivalentes": [
+      "volante",
+      "tubo",
+      "cuerda"
+    ],
+    "terminos_relacionados": [
+      "objeto cilíndrico",
+      "objeto circular",
+      "objeto alargado"
+    ],
+    "terminos_especificos": [
+      "volante de automóvil",
+      "tubería",
+      "cordón"
+    ],
+    "terminos_colectivos": [],
+    "descripcion": "Configuración aplicada a objetos como volantes, tubos o cuerdas.",
+    "imagen": "volante-tubo-cuerda.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-brocha-altura-extension",
+    "slug": "brocha-altura-extension",
+    "etiqueta_principal": "brocha, altura o extensión",
+    "terminos_equivalentes": [
+      "brocha",
+      "altura",
+      "extensión"
+    ],
+    "terminos_relacionados": [
+      "medida vertical",
+      "longitud",
+      "aplicador"
+    ],
+    "terminos_especificos": [
+      "brocha para pintar"
+    ],
+    "terminos_colectivos": [],
+    "descripcion": "Concepto asociado con una brocha, una medida de altura o una extensión.",
+    "imagen": "brocha-altura-extension.webp",
+    "estado_imagen": "disponible",
+    "nota_revision": "Verificar si «pextención» corresponde a «extensión».",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  },
+  {
+    "id": "concepto-perimetros-circulares",
+    "slug": "perimetros-circulares",
+    "etiqueta_principal": "perímetros circulares",
+    "terminos_equivalentes": [
+      "perímetro circular",
+      "perímetros circulares",
+      "contorno circular"
+    ],
+    "terminos_relacionados": [
+      "círculo",
+      "circunferencia",
+      "forma circular",
+      "borde circular"
+    ],
+    "terminos_especificos": [],
+    "terminos_colectivos": [],
+    "descripcion": "Representación del contorno o perímetro de una forma circular.",
+    "imagen": "perimetros-circulares.webp",
+    "estado_imagen": "disponible",
+    "fuente": {
+      "id": "diccionario-lsm-cdmx",
+      "pagina": 66
+    }
+  }
+]

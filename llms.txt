@@ -1,0 +1,21 @@
+# tlahtolmekauan
+
+> Proyecto público de investigación, preservación y difusión del Náhuatl, con traductor estructural Español ↔ Náhuatl y materiales educativos.
+
+Sitio canónico: https://speak-nahuatl.com/
+Idioma principal de la documentación: Español (México).
+Lengua estudiada: Náhuatl.
+Autoría pública del proyecto: mouan.
+
+## Recursos públicos principales
+- https://speak-nahuatl.com/ — traductor estructural y presentación del proyecto.
+- https://speak-nahuatl.com/guia/ — Guía Náhuatl Patrimonial.
+- https://speak-nahuatl.com/guia/estructura.html — estructura de la expresión.
+- https://speak-nahuatl.com/guia/conjugaciones.html — conjugaciones.
+- https://speak-nahuatl.com/guia/funciones.html — funciones y segmentación.
+- https://speak-nahuatl.com/guia/tiempo.html — kauitl, tiempo y numeración.
+- https://speak-nahuatl.com/guia/conocimiento.html — conocimiento y observación.
+- https://speak-nahuatl.com/guia/verbos.html — verbos y bibliografía.
+
+## Alcance
+El contenido público describe el proyecto y sus materiales de consulta. La lógica interna del motor, sus diccionarios privados y sus reglas de implementación no forman parte de esta guía de descubrimiento.
