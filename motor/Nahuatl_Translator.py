@@ -2694,7 +2694,7 @@ def detect_nominal_blocks_sp(tokens: list[str]) -> tuple[list[str], set[int]]:
 	def _resolve_belonging_marker(index: int, marker_sp: str) -> tuple[str, set[int]]:
 		marker = BELONGING_MAP_SP_TO_NTL[marker_sp]
 		extra_used = set()
-		if marker_sp == 'sus' and index + 3 < len(tokens):
+		if marker_sp in {'su', 'sus'} and index + 3 < len(tokens):
 			de_token = _clean_context_token(tokens[index + 2])
 			referent = _clean_context_token(tokens[index + 3])
 			if de_token == 'de' and referent == 'ustedes':
@@ -5808,7 +5808,7 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 	# Se traduce con MODIFIERS_SP_NTL y no se confunde con una cantidad.
 	# Los números intermedios permanecen dentro del análisis de la frase.
 	leading_number_match = re.match(
-		r'^\s*(\d+|[ivxlcdmIVXLCDM]+)\s*[\.\)\-:|•]*\s+(.+?)\s*$',
+		r'^\s*(\d+)\s*[\.\)\-:|•]*\s+(.+?)\s*$',
 		original_multiline_text,
 	)
 	if leading_number_match:
