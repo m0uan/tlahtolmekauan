@@ -6593,6 +6593,20 @@ def lookup_exact_sp_ntl_expression(sp_text: str) -> str | None:
 
 	sources = (EXPRESIONES_FIJAS_SP_NTL, LOCUCIONES_SP_NTL, INTERJECTIONS_SP_NTL, NOUNS_SP_NTL, MODIFIERS_SP_NTL, ADVERBS_SP_NTL, PREPOSITIONS_SP_NTL, FIXED_PHRASES_SP_TO_NTL, sp_ntl)
 
+	def _locution_value(source, candidate, value):
+		# Sólo las locuciones con pronombre explícito necesitan su
+		# representación independiente, ya documentada en el motor.
+		if source is LOCUCIONES_SP_NTL:
+			parts = normalize_input_sp(candidate).split(maxsplit=1)
+			if len(parts) == 2 and parts[0] in {'ustedes', 'ellos', 'ellas'}:
+				pronoun = VISIBLE_PRONOUN_MAP_SP_TO_NTL[parts[0]]
+				# Pasado: o- + an- debe visualizarse como o an- cuando
+				# existe un pronombre explícito de segunda plural.
+				if parts[0] == 'ustedes' and value.startswith('oan'):
+					value = 'o ' + value[1:]
+				return f'{pronoun} {value}'
+		return value
+
 	# 1) Coincidencia exacta sensible a mayúsculas/minúsculas.
 	for source in sources:
 		for raw_key, raw_value in source.items():
@@ -6602,7 +6616,7 @@ def lookup_exact_sp_ntl_expression(sp_text: str) -> str | None:
 			if candidate == raw_input:
 				value = first_variant(raw_value)
 				if value:
-					return value
+					return _locution_value(source, candidate, value)
 
 	# 2) Compatibilidad: búsqueda normalizada cuando no hay clave exacta.
 	key = normalize_input_sp(raw_input).strip().rstrip(' .;:!?¡¿')
@@ -6613,7 +6627,7 @@ def lookup_exact_sp_ntl_expression(sp_text: str) -> str | None:
 			if normalize_input_sp(raw_key).strip().rstrip(' .;:!?¡¿') == key:
 				value = first_variant(raw_value)
 				if value:
-					return value
+					return _locution_value(source, candidate, value)
 	# Pronombres explícitos de tercera persona plural en locuciones.
 	# La forma sin pronombre mantiene la lectura de tercera persona;
 	# «ustedes» continúa resolviéndose mediante su clave independiente.
