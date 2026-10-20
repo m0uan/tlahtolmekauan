@@ -6614,6 +6614,17 @@ def lookup_exact_sp_ntl_expression(sp_text: str) -> str | None:
 				value = first_variant(raw_value)
 				if value:
 					return value
+	# Pronombres explícitos de tercera persona plural en locuciones.
+	# La forma sin pronombre mantiene la lectura de tercera persona;
+	# «ustedes» continúa resolviéndose mediante su clave independiente.
+	words = key.split(maxsplit=1)
+	if len(words) == 2 and words[0] in {'ellos', 'ellas'}:
+		locution = words[1]
+		for raw_key, raw_value in LOCUCIONES_SP_NTL.items():
+			if normalize_input_sp(str(raw_key)).strip().rstrip(' .;:!?¡¿') == locution:
+				value = first_variant(raw_value)
+				if value:
+					return f"{VISIBLE_PRONOUN_MAP_SP_TO_NTL[words[0]]} {value}"
 	return None
 
 
