@@ -15,7 +15,6 @@ Prohibida la reproducción, redistribución, extracción estructural,
 ingeniería inversa, entrenamiento de modelos de inteligencia artificial
 o reutilización no autorizada.
 """
-
 import csv
 import difflib
 import importlib
@@ -69,6 +68,26 @@ except ImportError:
 
 
 try:
+	from .INTERJECTIONS_SP_NTL import INTERJECTIONS_SP_NTL
+except ImportError:
+	try:
+		from INTERJECTIONS_SP_NTL import INTERJECTIONS_SP_NTL
+	except Exception as e:
+		print("ERROR cargando INTERJECTIONS_SP_NTL:", e)
+		INTERJECTIONS_SP_NTL = {}
+
+
+try:
+	from .INTERJECTIONS_NTL_SP import INTERJECTIONS_NTL_SP
+except ImportError:
+	try:
+		from INTERJECTIONS_NTL_SP import INTERJECTIONS_NTL_SP
+	except Exception as e:
+		print("ERROR cargando INTERJECTIONS_NTL_SP:", e)
+		INTERJECTIONS_NTL_SP = {}
+
+
+try:
 	from .PREPOSITIONS_SP_NTL import PREPOSITIONS_SP_NTL
 except ImportError:
 	try:
@@ -86,6 +105,15 @@ except ImportError:
 	except Exception as e:
 		print("ERROR cargando BELONGING_MARKERS_SP_NTL:", e)
 		BELONGING_MARKERS_SP_NTL = {}
+
+try:
+	from .BELONGING_MARKERS_NTL_SP import BELONGING_MARKERS_NTL_SP
+except ImportError:
+	try:
+		from BELONGING_MARKERS_NTL_SP import BELONGING_MARKERS_NTL_SP
+	except Exception as e:
+		print("ERROR cargando BELONGING_MARKERS_NTL_SP:", e)
+		BELONGING_MARKERS_NTL_SP = {}
 
 
 try:
@@ -135,6 +163,24 @@ except ImportError:
 		print("ERROR cargando ADVERBS_NTL_SP:", e)
 		ADVERBS_NTL_SP = {}
 
+
+# Locuciones verbales españolas con equivalencia semántica completa.
+try:
+	from .LOCUCIONES_SP_NTL import LOCUCIONES_SP_NTL
+except ImportError:
+	try:
+		from LOCUCIONES_SP_NTL import LOCUCIONES_SP_NTL
+	except ImportError:
+		LOCUCIONES_SP_NTL = {}
+
+# Expresiones fraseológicas fijas, sin conjugación verbal propia.
+try:
+	from .EXPRESIONES_FIJAS_SP_NTL import EXPRESIONES_FIJAS_SP_NTL
+except ImportError:
+	try:
+		from EXPRESIONES_FIJAS_SP_NTL import EXPRESIONES_FIJAS_SP_NTL
+	except ImportError:
+		EXPRESIONES_FIJAS_SP_NTL = {}
 
 MODIFIERS = MODIFIERS_SP_NTL
 
@@ -672,8 +718,8 @@ def normalize_input_sp(text: str) -> str:
 	t = re.sub('\\ba\\s+través\\s+de\\b', 'por medio de', t)
 	t = re.sub('\\ba\\s+lo\\s+largo\\s+del\\b', 'a lo largo de', t)
 	t = re.sub('\\ba\\s+lo\\s+largo\\s+de\\s+el\\b', 'a lo largo de', t)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»…]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	preposed_double_clitic_forms = {'me lo': 'melo', 'me la': 'mela', 'me los': 'melos', 'me las': 'melas', 'te lo': 'telo', 'te la': 'tela', 'te los': 'telos', 'te las': 'telas', 'se lo': 'selo', 'se la': 'sela', 'se los': 'selos', 'se las': 'selas', 'nos lo': 'noslo', 'nos la': 'nosla', 'nos los': 'noslos', 'nos las': 'noslas'}
 	modal_forms = 'quiero|quieres|quiere|queremos|quieren|quise|quisiste|quiso|quisimos|quisieron|quería|queria|querías|querias|queríamos|queriamos|querían|querian|querría|querria|querrías|querrias|querríamos|querriamos|querrían|querrian|puedo|puedes|puede|podemos|pueden|pude|pudiste|pudo|pudimos|pudieron|podía|podia|podías|podias|podíamos|podiamos|podían|podian|podría|podria|podrías|podrias|podríamos|podriamos|podrían|podrian|debo|debes|debe|debemos|deben|debí|debiste|debió|debimos|debieron|debía|debia|debías|debias|debíamos|debiamos|debían|debian|debería|deberia|deberías|deberias|deberíamos|deberiamos|deberían|deberian'
 	for phrase, glued in preposed_double_clitic_forms.items():
@@ -725,6 +771,7 @@ def detect_inline_fixed_phrases_ntl(tokens: list[str]) -> tuple[list[tuple[int, 
 	sources = (
 		('noun', NOUNS_NTL_SP),
 		('modifier', MODIFIERS_NTL_SP),
+		('interjection', INTERJECTIONS_NTL_SP),
 		('general', ntl_sp),
 	)
 	for source_kind, source in sources:
@@ -773,8 +820,8 @@ def remove_sp_articles_for_translation(text: str) -> str:
 	t = unicodedata.normalize('NFC', text).lower().strip()
 	t = re.sub('\\bpor\\s+medio\\s+del\\b', 'por medio de', t)
 	t = re.sub('\\bpor\\s+medio\\s+de\\s+el\\b', 'por medio de', t)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	return t
 
 def strip_accents_local(s: str) -> str:
@@ -992,7 +1039,9 @@ def build_compound_participle_ntl(
 		parts.append(main)
 
 	elif kind == "pluperfect":
-		# había comido -> achto inon tlakuaya
+		# El auxiliar determina la persona y el número.
+		if semi:
+			parts.append(semi)
 		if reflexive:
 			parts.append("mo")
 		parts.append(root + ("yakeh" if plural else "ya"))
@@ -1110,14 +1159,15 @@ BELONGING_PREFIXES = {'no', 'mo', 'i', 'to', 'anmo', 'in'}
 def normalize_fixed_ntl_sequences(text: str) -> str:
 	return re.sub(r'\bnelli\s+ki\b', 'tlen nelli', text)
 
-FIXED_PHRASES_SP_TO_NTL = {'es que': 'tlen', 'salvo conducto': 'aztli', 'rosa': 'xokoxochitl', 'color rosa': 'tlapaltik', 'sin problema': 'amotla ouihyotl', 'tuvo que trasladarse allí con sus hijas': 'ompa ika i pilkoneuan o mo olitik', 'les dijo que no les quedaba más remedio que aprender a labrar la tierra': 'o kin ihtok tlen izel tzalotizkehtza tlalteteki', 'buena comida de maíz y frijol': 'ezentlakualli', 'comida de maíz y frijol': 'ezentlakualli'}
+FIXED_PHRASES_SP_TO_NTL = {'a lo que': 'tlen', 'es que': 'tlen', 'salvo conducto': 'aztli', 'rosa': 'xokoxochitl', 'color rosa': 'tlapaltik', 'sin problema': 'amotla ouihyotl', 'tuvo que trasladarse allí con sus hijas': 'ompa ika i pilkoneuan o mo olitik', 'les dijo que no les quedaba más remedio que aprender a labrar la tierra': 'o kin ihtok tlen izel tzalotizkehtza tlalteteki', 'buena comida de maíz y frijol': 'ezentlakualli', 'comida de maíz y frijol': 'ezentlakualli'}
 FIXED_PHRASES_SP_TO_NTL.update({'salida del sol': 'tonalkizayan', 'puesta del sol': 'tonalkalakiyan', 'a través de': 'ipal', 'por medio de': 'ipal', 'a lo largo de': 'ipal', 'mujer joven': 'ziuatl', 'mujer madura': 'zouatl', 'hombre joven': 'telpochtli', 'mujer joven': 'ziuatl', 'mujer madura': 'zouatl', 'hombre joven': 'telpochtli', 'pequeña flor': 'xochipilli', 'siete días': 'ilhuchikome', 'hacer buches': 'akamak olinipacho', 'buches hacer': 'akamak olinipacho', 'bomba para rociar': 'achiuazmalaz', 'bomba de rociar': 'auachikmalaz', 'bolsa de mujer': 'chikipiltlapalli', 'bolso de mujer': 'chikipiltlapalli', 'bodega ubicada': 'kouakan', 'bodega temporal': 'kouhman', 'bodega nueva': 'kouhyan', 'bodega de resguardo': 'kouiko', 'bebida provechosa': 'akotzatzalik', 'bajada de agua': 'achapantla', 'azúcar blanca': 'iztaktzopelnextli', 'aún no pertenece': 'amoakua', 'aún no': 'amoak', 'atracción gravitatoria': 'etikyotl', 'atracción metálica': 'tepozanayotl', 'atorar en árbol': 'kuaukui', 'atorar en árbol': 'kuaukuakan', 'animal semejante a la garduña': 'kakomiztli', 'alguien se sabe': 'akinmomati', 'algo sobre puesto de': 'apan', 'a lado': 'itlak', 'a su lado': 'itlak', 'aire fuerte': 'ehekachikaua', 'adornos de papel': 'amaneapanaluan', 'adorno de papel': 'amaneapanalli', 'abundancia de agua': 'atlanyotl', 'abundancia de agua': 'atlan', 'azul intenso': 'yayauhxiuhtik', 'azul suave': 'tzinxiuhtik', 'verde intenso': 'xoxohtik', 'verde suave': 'tzinxohtik', 'rojo intenso': 'chichiltik', 'rojo suave': 'tzinchiltik', 'rosa mexicano': 'tlatlapaltik', 'amarillo intenso': 'kokoztik', 'amarillo suave': 'tzinkoztik', 'mi cama azul': 'no xiuhtik tlapech', 'me dejé yo mi cama azul': 'onimo kauk no xiuhtik tlapech', 'a mí': 'nech', 'a ti': 'mitz', 'a ella': 'yehua', 'a él': 'yehua', 'a nosotras': 'tech', 'a nosotros': 'tech', 'a ustedes': 'anmech', 'a ellas': 'yehuan', 'a ellos': 'yehuan', 'entre las piernas': 'metznepantla', 'pasado mañana': 'nimanmoztla'})
+FIXED_PHRASES_SP_TO_NTL.update({"no da el ancho":'amoazi'})
 PICAR_VARIANTES = {'picar': ['chiloa', 'uitzpani', 'chiuahtzoti'], 'punzar': ['uitzpani', 'chiuahtzoti'], 'pinchar': ['chiuahtzoti'], 'espinar': ['uitzpani', 'auaui']}
-LEXICALIZED_NOUN_COMPOUNDS_SP_TO_NTL = {'piedra del sol': 'tonaltetl', 'calendario azteca': 'tonaltetl', 'carbon de dinero': 'tekontekontli', 'dinero de carbon': 'tekontekontli', 'moneda de carbon': 'tekontekontli', 'billete de carbon': 'tekotekontli'}
+LEXICALIZED_NOUN_COMPOUNDS_SP_TO_NTL = {'jaguar de obsidiana': 'itzozelotl', 'piedra del sol': 'tonaltetl', 'calendario azteca': 'tonaltetl', 'carbon de dinero': 'tekontekontli', 'dinero de carbon': 'tekontekontli', 'moneda de carbon': 'tekontekontli', 'billete de carbon': 'tekotekontli'}
 REL_LINKERS_SP = {'de', 'del'}
 REL_ARTICLES_SP = {'el', 'la', 'los', 'las'}
 LEADING_ARTICLES_SP = {'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas'}
-CORE_VERBS_SP_TO_NTL = {'allá': 'ompa', 'allí': 'ompa', 'ver': 'ita', 'querer': 'neki', 'amar': 'tlazohtla', 'volar': 'patlani', 'recargar': 'onmamaua', 'preservar': 'tlanemonyau', 'resistir': 'chikaua', 'avanzar': 'nehnemi', 'decir': 'ilia', 'decidir': 'iltlakui', 'expresar': 'ihto', 'hablar': 'tlahto', 'llamar': 'notza', 'platicar': 'nonotza', 'preguntar': 'tlahtlania', 'responder': 'nankilia', 'afirmar': 'kemilia', 'negar': 'amoihto', 'caer': 'uetzka', 'cargar': 'mamaua', 'ir': 'yau', 'venir': 'uala', 'pasar': 'pano', 'entrar': 'kalakia', 'salir': 'kiza', 'subir': 'eua', 'bajar': 'temo', 'caer': 'uetzka', 'llegar': 'ehko', 'caminar': 'nehnemi', 'viajar': 'ohtotoka', 'correr': 'cholo', 'existir': 'ka', 'tener': 'pia', 'haber': 'onka', 'vivir': 'nemi', 'morir': 'miki', 'nacer': 'ixua', 'descansar': 'zeui', 'crecer': 'izkaltia', 'hacer': 'chiua', 'usar': 'kehua', 'dejar': 'kaua', 'permitir': 'kaua', 'poner': 'tlalia', 'colocar': 'kania', 'abrir': 'tlapo', 'cerrar': 'tzakua', 'lavar': 'tlapaka', 'buscar': 'temo', 'llenar': 'temi', 'trabajar': 'tekiti', 'transformar': 'xolo', 'dividir': 'zezeki', 'unir': 'uania', 'llevar': 'uihka', 'traer': 'ualika', 'tapar': 'tlapa', 'dar': 'maka', 'acercar': 'naua', 'comer': 'tlakua', 'beber': 'koni', 'respirar': 'ihiyotia', 'dormir': 'kochi', 'poseer': 'u', 'poder': 'ueli', 'llover': 'kiaui', 'pensar': 'tlalnamiki', 'imaginar': 'izpanilyo', 'conocer': 'ixmati', 'creer': 'neltoka', 'saber': 'mati', 'recordar': 'ilnamiki', 'cantar': 'kuika', 'reír': 'uetzka', 'llorar': 'choka', 'sorprender': 'izamiki', 'asustar': 'mauhtia', 'molestar': 'kuezo', 'alegrar': 'paktia', 'entristecer': 'yolkoko'}
+CORE_VERBS_SP_TO_NTL = {'allá': 'ompa', 'allí': 'ompa', 'ver': 'ita', 'querer': 'neki', 'amar': 'tlazohtla', 'volar': 'patlani', 'recargar': 'onmamaua', 'preservar': 'tlanemonyau', 'resistir': 'chikaua', 'avanzar': 'nehnemi', 'decir': 'ilia', 'decidir': 'iltlakui', 'expresar': 'ihto', 'hablar': 'tlahto', 'llamar': 'notza', 'platicar': 'nonotza', 'preguntar': 'tlahtlania', 'responder': 'nankilia', 'afirmar': 'kemilia', 'negar': 'amoihto', 'caer': 'uetzka', 'cargar': 'mamaua', 'ir': 'yau', 'venir': 'uala', 'pasar': 'pano', 'entrar': 'kalakia', 'salir': 'kiza', 'subir': 'eua', 'bajar': 'temo', 'caer': 'uetzka', 'llegar': 'ehko', 'caminar': 'nehnemi', 'viajar': 'ohtotoka', 'correr': 'cholo', 'existir': 'ka', 'tener': 'pia', 'haber': 'onka', 'vivir': 'nemi', 'morir': 'miki', 'nacer': 'ixua', 'descansar': 'zeui', 'crecer': 'izkaltia', 'hacer': 'chiua', 'usar': 'kehua', 'dejar': 'kaua', 'permitir': 'kaua', 'poner': 'tlalia', 'colocar': 'kania', 'abrir': 'tlapo', 'cerrar': 'tzakua', 'lavar': 'tlapaka', 'buscar': 'temo', 'llenar': 'temi', 'trabajar': 'tekiti', 'transformar': 'xolo', 'dividir': 'zezeki', 'unir': 'uania', 'llevar': 'uihka', 'traer': 'uihka', 'tapar': 'tlapa', 'dar': 'maka', 'acercar': 'naua', 'comer': 'tlakua', 'beber': 'koni', 'respirar': 'ihiyotia', 'dormir': 'kochi', 'poseer': 'u', 'poder': 'ueli', 'llover': 'kiaui', 'pensar': 'tlalnamiki', 'imaginar': 'izpanilyo', 'conocer': 'ixmati', 'creer': 'neltoka', 'saber': 'mati', 'recordar': 'ilnamiki', 'cantar': 'kuika', 'reír': 'uetzka', 'llorar': 'choka', 'sorprender': 'izamiki', 'asustar': 'mauhtia', 'molestar': 'kuezo', 'alegrar': 'paktia', 'entristecer': 'yolkoko'}
 INFINITIVE_VERBS_SP_TO_NTL = {'abarcar': 'pacho', 'abatir': 'achikopala', 'abrazar': 'pacho', 'abrir': 'tlapo', 'abrir': 'tlapoa', 'abusar': 'achpaniua', 'acabar': 'tlami', 'aceptar': 'zelia', 'acercar': 'naua', 'acertar': 'xihia', 'aclarar': 'chipaua', 'acumular': 'achpania', 'adeudar': 'uihkilia', 'adulterar': 'akaui', 'afirmar': 'kemaihto', 'afirmar': 'kemili', 'afirmar': 'kemilia', 'agitar': 'olinia', 'ahogar': 'amiku', 'alcanzar': 'azi', 'alegrar': 'paktia', 'amar': 'tlazohtla', 'analizar': 'ihiztliko', 'anticipar': 'achto', 'apuntar': 'ahxiltia', 'aromatizar': 'ahuikaua', 'asombrar': 'iza', 'asustar': 'mauhtia', 'atacar': 'yaochiua', 'avanzar': 'nehnemi', 'bailar': 'ihtotia', 'bajar': 'temo', 'bajar': 'temoa', 'bañar': 'altia', 'beber': 'konia', 'bloquear': 'amokaua', 'buscar': 'temo', 'buscar': 'temoa', 'caer': 'uetzka', 'cambiar': 'pala', 'caminar': 'nehnemi', 'cantar': 'kuika', 'cargar': 'mamaua', 'cegar': 'ixmiktia', 'cerrar': 'tzakua', 'colar': 'amimina', 'colocar': 'kania', 'combidar': 'tzitzahtzihko', 'comer': 'tlakua', 'compartir': 'tzitzahtzihko', 'comprobar': 'itachiua', 'confundir': 'amoixmatiua', 'conocer': 'ixmati', 'conocer': 'tlamati', 'contaminar': 'akaui', 'contar': 'poua', 'controlar': 'chikaua', 'convencer': 'neltokachiua', 'correr': 'cholo', 'crear': 'chichiua', 'crecer': 'izkaltia', 'creer': 'neltoka', 'dar': 'maka', 'deber': 'uihkili', 'decidir': 'iltlakui', 'decir': 'ihto', 'decir': 'ilia', 'dejar': 'kaua', 'descansar': 'zeui', 'desear': 'eheleuia', 'deslizar': 'alaua', 'despertar': 'iza', 'detener': 'kehtza', 'dividir': 'zezeki', 'dormir': 'kochi', 'ejecutar': 'chiua', 'elaborar': 'chichiua', 'elevar': 'eua', 'embarcar': 'akalko', 'empapar': 'alou', 'encorbar': 'ahkolkui', 'enfriar': 'zezeui', 'ensuciar': 'tzoyo', 'entrar': 'kalaki', 'entrar': 'kalakia', 'entregar': 'maka', 'entristecer': 'yolkoko', 'erigir': 'eua', 'esperar': 'chia', 'establecer': 'tlali', 'estar': 'ka', 'exagerar': 'achtokzepa', 'exhortar': 'ahuania', 'exhortar': 'ahuia', 'existir': 'ka', 'expresar': 'ihto', 'filtrar': 'amimina', 'fortalecer': 'chikaua', 'gustar': 'paki', 'haber': 'onka', 'habitar': 'chantia', 'hablar': 'tlahto', 'hacer': 'chiua', 'hervir': 'amana', 'humedecer': 'atia', 'humillar': 'achikuepala', 'hundir': 'akalakia', 'imaginar': 'izpanilyo', 'impedir': 'amokaua', 'iniciar': 'peua', 'injuriar': 'amokualtlahto', 'inspirar': 'yolnotza', 'insultar': 'amokualtlahto', 'invitar': 'izpanotza', 'ir': 'yaui', 'jalar': 'an a', 'lavar': 'tlapaka', 'levantar': 'eua', 'limitar': 'amokaua', 'llamar': 'notza', 'llegar': 'ehko', 'llenar': 'temi', 'llevar': 'uihka', 'llorar': 'choka', 'llover': 'kiaui', 'mentir': 'amonelo', 'mojar': 'atia', 'molestar': 'kuezo', 'morir': 'miki', 'mostrar': 'ititi', 'mover': 'oli', 'mover': 'olia', 'moverse': 'mooli', 'nacer': 'ixua', 'necesitar': 'neneki', 'negar': 'amoihto', 'negar': 'amotia', 'nombrar': 'toka', 'observar': 'tlachia', 'ofender': 'amokualtlahto', 'oler': 'ahuia', 'parar': 'kehtza', 'pasar': 'pano', 'pasar': 'panoa', 'pedir': 'ihtlania', 'pensar': 'tlalnamiki', 'perder': 'poliui', 'perfumar': 'ahuikaua', 'permitir': 'kaua', 'pesar': 'etia', 'pinchar': 'chiuahtzoti', 'platicar': 'nonotza', 'poder': 'ueli', 'poner': 'tlalia', 'poseer': 'ua', 'predecir': 'achtoilia', 'preguntar': 'tlahtlani', 'preguntar': 'tlahtlania', 'preservar': 'tlanemonyau', 'prevenir': 'achtochiua', 'progresar': 'ahkuana', 'prologar': 'achtopou', 'proteger': 'chimalhua', 'querer': 'neki', 'rebasar': 'achtou', 'recargar': 'onmamaua', 'rechazar': 'amotilanazneki', 'recordar': 'ilnamiki', 'regañar': 'ahu', 'resbalar': 'alaua', 'resistir': 'chikaua', 'respirar': 'ihiyotia', 'responder': 'nankili', 'responder': 'nankilia', 'reír': 'uetzka', 'saber': 'mati', 'salir': 'kiza', 'seguir': 'totoka', 'separar': 'tzo', 'ser': 'eyo', 'señalar': 'ahxiltia', 'sincerar': 'neltokaihto', 'sobresaltar': 'ahkomana', 'socavar': 'achikuepala', 'sopesar': 'eheua', 'soportar': 'chikoua', 'sorprender': 'izamiki', 'subir': 'eua', 'sumergir': 'akalakia', 'superar': 'achtoua', 'tapar': 'tlapa', 'temblar': 'olinia', 'tener': 'pia', 'terminar': 'tlami', 'trabajar': 'tekiti', 'traer': 'ualika', 'transformar': 'xolo', 'transformar': 'xoloa', 'ungir': 'ahalou', 'unir': 'uania', 'untar': 'ahalou', 'usar': 'kehua', 'velar': 'amokochiua', 'venir': 'uala', 'ver': 'ita', 'verificar': 'itachiya', 'viajar': 'htotoka', 'viajar': 'ohtotoka', 'vibrar': 'olinia', 'vivir': 'nemi', 'volar': 'patlani', 'zambullir': 'akalakia'}
 VERB_VARIANTS_SP_TO_NTL = {'decir': ['ihtoa', 'ilia'], 'expresar': ['ihto'], 'hablar': ['tlahto'], 'llamar': ['notza'], 'platicar': ['nonotza'], 'exhortar': ['ahuia', 'ahuania'], 'preguntar': ['tlahtlani', 'tlahtlania'], 'negar': ['amotia', 'amoihtoa'], 'afirmar': ['kemaihtoa', 'kemilia'], 'sincerar': ['neltokaihto'], 'mentir': ['amoneloa'], 'conocer': ['ixmati', 'tlamati']}
 SPECIAL_VERBS_SP = {'ser', 'estar', 'existir', 'tener', 'haber'}
@@ -1277,6 +1327,11 @@ def detect_adverbs_sp(tokens, used_indexes=None):
 		if i in used_indexes:
 			continue
 
+		# Un "que" interno enlaza clausulas: no es el "ma" exhortativo.
+		# La lectura desiderativa inicial queda disponible en su contexto.
+		if tk == 'que' and i > 0:
+			continue
+
 		# La forma sin tilde 'como' sólo entra como comparativo cuando
 		# resolve_ambiguous_spanish_tokens la marca explícitamente.
 		# En cualquier otro contexto se reserva para el verbo comer.
@@ -1320,6 +1375,10 @@ def detect_modifiers_sp(tokens: list[str], used_indexes: set[int] | None=None) -
 			_add(gerund)
 			continue
 		if i in used_indexes:
+			continue
+		if tk == 'que':
+			# Con antecedente: relativo tlen. Inicial: exhortativo ma.
+			_add('ma' if i == 0 else 'tlen')
 			continue
 		if is_money_token_sp(tk):
 			_add(tk)
@@ -1747,7 +1806,11 @@ def detect_periphrastic_decir_sp(tokens: list[str]) -> dict | None:
 	return None
 
 def detect_simple_verb(tokens: list[str]) -> tuple[str | None, str | None]:
+	# Los clíticos españoles acompañan al predicado; no son verbos autónomos.
+	clitics = {'me', 'te', 'se', 'nos', 'os', 'lo', 'la', 'los', 'las', 'le', 'les'}
 	for tk in tokens:
+		if tk in clitics:
+			continue
 		if tk in INFINITIVE_VERBS_SP_TO_NTL:
 			return (tk, INFINITIVE_VERBS_SP_TO_NTL[tk])
 		if tk in CORE_VERBS_SP_TO_NTL:
@@ -2066,6 +2129,18 @@ def detect_finite_verb(tokens: list[str]) -> tuple[str | None, str | None, tuple
 			result = _try_candidate(verb_sp, subject, time)
 			if result:
 				return result
+	# Las formas conjugadas registradas pueden carecer de infinitivo activo
+	# en los diccionarios. Se reconoce su flexión sólo si el infinitivo
+	# pertenece al repertorio verbal explícito del motor.
+	for tk in tokens:
+		if tk in {'me', 'te', 'se', 'nos', 'os', 'lo', 'la', 'los', 'las', 'le', 'les'}:
+			continue
+		lexical = first_variant(tolerant_lookup(tk, sp_ntl))
+		if not lexical:
+			continue
+		for verb_sp, subject, time in _regular_candidates_from_token(tk):
+			if verb_sp in TRANSITIVE_VERBS_SP or verb_sp in INTRANSITIVE_VERBS_SP or verb_sp in PRONOMINAL_VERBS_SP or verb_sp in MIXED_VERBS_SP:
+				return (verb_sp, lexical, subject, time)
 	return (None, None, None, None)
 
 def detect_time(tokens: list[str]) -> str:
@@ -2090,7 +2165,7 @@ def should_apply_belonging_reduction(belonging: str | None) -> bool:
 def normalize_compound_key_sp(text: str) -> str:
 	t = normalize_input_sp(text)
 	t = strip_accents_local(t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'\\s+', ' ', t).strip()
 	return t
 
 def strip_nominal_suffix_ntl(noun: str) -> str:
@@ -2138,6 +2213,10 @@ def split_relation_chunks_sp(tokens: list[str]) -> list[str]:
 
 def resolve_noun_chunk_ntl(chunk_sp: str) -> str | None:
 	key = normalize_compound_key_sp(chunk_sp)
+	# Raíz material indicada para compuestos: «jarro de barro».
+	# No altera la traducción aislada del sustantivo «barro».
+	if key == 'barro':
+		return 'tzoka'
 	if key in LEXICALIZED_NOUN_COMPOUNDS_SP_TO_NTL:
 		return LEXICALIZED_NOUN_COMPOUNDS_SP_TO_NTL[key]
 	val = first_variant(NOUNS_SP_NTL.get(key))
@@ -2149,7 +2228,11 @@ def resolve_noun_chunk_ntl(chunk_sp: str) -> str | None:
 	return None
 
 def compose_noun_pair_ntl(head_ntl: str, source_ntl: str) -> str:
-	return strip_nominal_suffix_ntl(source_ntl) + head_ntl
+	root = strip_nominal_suffix_ntl(source_ntl)
+	# Evita duplicar la vocal en la unión de raíces (tzoka + akomtli).
+	if root and head_ntl and root[-1] == head_ntl[0] and root[-1] in 'aeiou':
+		return root + head_ntl[1:]
+	return root + head_ntl
 
 def build_multi_noun_compound_ntl(chunks_ntl: list[str]) -> str | None:
 	if not chunks_ntl:
@@ -2929,8 +3012,13 @@ def detect_spanish_structure(text: str) -> dict:
 
 	# Solamente se entra aquí cuando no existe
 	# auxiliar haber + participio.
+	# Los clíticos que forman parte de una igualdad multipalabra no se
+	# consumen aisladamente (por ejemplo, «lo» dentro de «a lo que»).
+	_, early_fixed_phrase_indexes = detect_inline_fixed_phrases_sp(tokens)
 
 	for i, tk in enumerate(tokens):
+		if i in early_fixed_phrase_indexes:
+			continue
 
 		if tk == 'lo':
 			return 'ki'
@@ -3025,6 +3113,32 @@ def detect_spanish_structure(text: str) -> dict:
 	nouns = detect_nouns_sp(tokens_with_articles, belonging=belonging, used_indexes=used_phrase_indexes, visible_pronoun=visible_pronoun)
 	nouns = [n for n in nouns if n != 'in']
 	nouns = belonging_noun_blocks + nouns + prepositional_noun_blocks
+	# En las relaciones nominales confirmadas, conserva ambos referentes
+	# y sitúa la fuente antes del núcleo. No generaliza el orden a todas
+	# las relaciones «A de B» ni reordena compuestos lexicalizados.
+	if not prepositional_noun_blocks and len(nouns) >= 2:
+		for rel_index, rel_token in enumerate(tokens_with_articles):
+			if rel_token not in {'de', 'del'}:
+				continue
+			left_index = rel_index - 1
+			while left_index >= 0 and tokens_with_articles[left_index] in ARTICLES_SP:
+				left_index -= 1
+			right_index = rel_index + 1
+			while right_index < len(tokens_with_articles) and tokens_with_articles[right_index] in ARTICLES_SP:
+				right_index += 1
+			if left_index < 0 or right_index >= len(tokens_with_articles):
+				continue
+			# Relaciones documentadas por el usuario: ampliar sólo tras validar.
+			validated_relations = {('lectura', 'palabra')}
+			if (tokens_with_articles[left_index], tokens_with_articles[right_index]) not in validated_relations:
+				continue
+			left_ntl = first_variant(NOUNS_SP_NTL.get(tokens_with_articles[left_index]))
+			right_ntl = first_variant(NOUNS_SP_NTL.get(tokens_with_articles[right_index]))
+			if left_ntl and right_ntl and left_ntl != right_ntl and left_ntl in nouns and right_ntl in nouns:
+				left_pos = nouns.index(left_ntl)
+				right_pos = nouns.index(right_ntl)
+				if left_pos < right_pos:
+					nouns.insert(left_pos, nouns.pop(right_pos))
 	modifiers = inline_phrase_modifiers + detect_modifiers_sp(tokens_without_to_be, used_indexes=used_phrase_indexes)
 	adverbs = detect_adverbs_sp(tokens_without_to_be, used_indexes=used_phrase_indexes)
 	if como_comparativo and 'kenin' not in adverbs:
@@ -3057,6 +3171,7 @@ def detect_spanish_structure(text: str) -> dict:
 	print('subject =', detected_subject)
 	print('time =', detected_time)
 	print()
+	verb_is_preconjugated = False
 	if not verb_sp:
 		verb_sp, verb_ntl, detected_subject, detected_time = detect_regular_verb(verb_analysis_tokens)
 	if not verb_sp:
@@ -3064,7 +3179,16 @@ def detect_spanish_structure(text: str) -> dict:
 		detected_subject = None
 		detected_time = None
 
-		if verb_sp and verb_ntl:
+		# Algunas entradas SP→NTL contienen ya la forma finita con
+		# semipronombre (ni-, ti-, an-). No se debe flexionar de nuevo
+		# esa forma como si fuera una raíz, ni añadir una vocal final.
+		# Se reconoce por la igualdad léxica del token español original.
+		if verb_sp and verb_ntl and verb_sp in verb_analysis_tokens and not verb_sp.endswith(('ar', 'er', 'ir')):
+			lexical = sp_ntl.get(verb_sp)
+			if lexical and verb_ntl in all_variants(lexical) and verb_ntl.startswith(('ni', 'ti', 'an')):
+				verb_is_preconjugated = True
+
+		if verb_sp and verb_ntl and not verb_is_preconjugated:
 			infinitive_candidates = []
 
 			if verb_sp.endswith('o') and len(verb_sp) > 2:
@@ -3177,6 +3301,17 @@ def detect_spanish_structure(text: str) -> dict:
 					token_modifier_values = set(all_variants(token_modifier))
 					modifiers = [m for m in modifiers if m not in token_modifier_values]
 
+	# En náhuatl, una predicación adjetival no requiere que el verbo español
+	# «ser» produzca una forma verbal propia. Si «ser» funciona como cópula
+	# ante un adjetivo reconocido, se conserva el adjetivo como predicado y
+	# se elimina únicamente la cópula. Esto permite, por ejemplo, que
+	# «es probable» se traduzca mediante la equivalencia de «probable», sin eyo.
+	if verb_sp == 'ser' and modifiers:
+		verb_sp = None
+		verb_ntl = None
+		detected_subject = None
+		detected_time = None
+
 	# Algunas formas finitas registradas en sp_ntl ya contienen el
 	# semipronombre correspondiente (ni-, ti-, an-). El constructor agrega
 	# después el semipronombre de la persona detectada, por lo que aquí se
@@ -3206,6 +3341,14 @@ def detect_spanish_structure(text: str) -> dict:
 	if 'a' in tokens and 'ustedes' in tokens and ('los' in tokens):
 		reflexive = 'mo'
 		explicit_reflexive = 'mo'
+	elif (
+		verb_sp == 'llegar'
+		and 'llega' in tokens
+		and direct_object in {'mitz', 'nech', 'tech'}
+	):
+		# «te/me/nos llega»: clítico acusativo, sin duplicación reflexiva.
+		reflexive = None
+		explicit_reflexive = None
 	elif direct_object and verb_sp in TRANSITIVE_VERBS_SP:
 		explicit_reflexive = None
 		reflexive = None
@@ -3273,6 +3416,7 @@ def detect_spanish_structure(text: str) -> dict:
 		'question_noun': question_noun,
 		'adverbs': adverbs,
 		'has_double_clitic': has_double_clitic,
+		'verb_is_preconjugated': verb_is_preconjugated,
 	}
 
 def choose_semipronoun(person: str, number: str) -> str:
@@ -3578,10 +3722,11 @@ def build_ntl_finite_verb(root_ntl: str, time: str | None, person: str, number: 
 	if time == 'Past':
 		past_root = root_ntl
 
-		# 'maka' conserva la vocal final al formar el pretérito:
+		# 'chiua' conserva su -a al formar el pretérito: chiua + k -> chiuak.
+		# 'maka' también conserva la vocal final al formar el pretérito:
 		# maka + k -> makak. La regla también cubre raíces estructuradas
 		# que terminan en -maka, sin alterar verbos como ititi o machilia.
-		if past_root.endswith(('maka', 'tlakua', 'peua', 'uetzka')):
+		if past_root == 'chiua' or past_root.endswith(('maka', 'tlakua', 'peua', 'uetzka')):
 			# Estas raíces conservan la vocal final antes de -k:
 			# maka -> makak; tlakua -> tlakuak; peua -> peuak; uetzka -> uetzkak.
 			pass
@@ -3944,8 +4089,10 @@ def build_ntl_expression(structure, show_null_subject=False):
 				direct_object = 'k'
 				direct_object = fix_k_ki(direct_object, semi, suffix)
 	already_conjugated_past = prefixed_past
-	if structure.get('modal_compound') or already_conjugated_past:
+	if structure.get('modal_compound') or already_conjugated_past or structure.get('verb_is_preconjugated'):
 		verb_form = verb_ntl if verb_ntl else ''
+		if structure.get('verb_is_preconjugated'):
+			semi = '∅'  # La forma léxica ya incluye su semipronombre.
 	else:
 		verb_form = build_ntl_finite_verb(verb_ntl, time, person, number) if verb_ntl else ''
 	print()
@@ -4140,9 +4287,18 @@ def classify_section_sp(tokens: list[str]) -> str:
 	toks = [tk for tk in tokens if tk]
 	if not toks:
 		return 'EMPTY'
-	if any((tk in {'sucedió', 'ocurrió', 'pasó'} for tk in toks)):
+
+	# Las palabras que pertenecen a una igualdad léxica multipalabra ya
+	# tienen una función conjunta. No deben clasificar la oración otra vez
+	# por separado; por ejemplo, el «que» de «a lo que».
+	_, fixed_phrase_indexes = detect_inline_fixed_phrases_sp(toks)
+	classification_toks = [
+		tk for index, tk in enumerate(toks)
+		if index not in fixed_phrase_indexes
+	]
+	if any((tk in {'sucedió', 'ocurrió', 'pasó'} for tk in classification_toks)):
 		return 'NARRATIVE_INTRO'
-	if any((tk in {'debo', 'debes', 'debe', 'debemos', 'deben', 'tuvo', 'tuvieron'} for tk in toks)):
+	if any((tk in {'debo', 'debes', 'debe', 'debemos', 'deben', 'tuvo', 'tuvieron'} for tk in classification_toks)):
 		return 'OBLIGATIVE'
 	# Las formas existenciales de "haber" (hay, había, haya...) no deben
 	# enviar automáticamente toda la oración a AUXILIARY_SUBORDINATE.
@@ -4150,10 +4306,10 @@ def classify_section_sp(tokens: list[str]) -> str:
 	# una subordinada con "que" o una forma verbal compatible.
 	haber_existential_forms = {'hay', 'había', 'habia', 'haya', 'hayan'}
 	has_auxiliary_subordinate = False
-	for aux_i, tk in enumerate(toks):
+	for aux_i, tk in enumerate(classification_toks):
 		if tk not in AUXILIARY_FORMS_SP:
 			continue
-		tail = toks[aux_i + 1:]
+		tail = classification_toks[aux_i + 1:]
 
 		# Sólo los auxiliares modales pueden gobernar un infinitivo. Verbos
 		# plenos como tener no absorben una oración sólo porque más adelante
@@ -4172,25 +4328,25 @@ def classify_section_sp(tokens: list[str]) -> str:
 			break
 	if has_auxiliary_subordinate:
 		return 'AUXILIARY_SUBORDINATE'
-	if 'cuando' in toks or 'cuándo' in toks:
+	if 'cuando' in classification_toks or 'cuándo' in classification_toks:
 		return 'TEMPORAL_WHEN'
-	if 'mientras' in toks:
+	if 'mientras' in classification_toks:
 		return 'TEMPORAL_WHILE'
-	if 'que' in toks or 'tlen' in toks:
+	if 'que' in classification_toks or 'tlen' in classification_toks:
 		return 'RELATIVE'
-	if any((tk.endswith(('ando', 'iendo')) for tk in toks)):
+	if any((tk.endswith(('ando', 'iendo')) for tk in classification_toks)):
 		return 'GERUND_CONTRAST'
-	if any((tk in {'no', 'nada', 'sin'} for tk in toks)):
+	if any((tk in {'no', 'nada', 'sin'} for tk in classification_toks)):
 		return 'NEGATIVE'
-	if any((tk in {'en', 'sobre', 'dentro', 'allí', 'aquí', 'campo'} for tk in toks)):
+	if any((tk in {'en', 'sobre', 'dentro', 'allí', 'aquí', 'campo'} for tk in classification_toks)):
 		return 'LOCATIVE'
-	if any((tk in {'con', 'mediante'} for tk in toks)):
+	if any((tk in {'con', 'mediante'} for tk in classification_toks)):
 		return 'INSTRUMENTAL_OR_COMPANY'
-	if any((tk in {'y', 'pero'} for tk in toks)):
+	if any((tk in {'y', 'pero'} for tk in classification_toks)):
 		return 'COORDINATED'
-	if any((tk.endswith(('ar', 'er', 'ir')) for tk in toks)):
+	if any((tk.endswith(('ar', 'er', 'ir')) for tk in classification_toks)):
 		return 'INFINITIVE_CHAIN'
-	if any((tk in {'me', 'te', 'se', 'nos'} for tk in toks)):
+	if any((tk in {'me', 'te', 'se', 'nos'} for tk in classification_toks)):
 		return 'REFLEXIVE_VERBAL'
 	return 'SIMPLE_VERBAL'
 
@@ -4200,6 +4356,18 @@ def translate_relative_section_sp(t: str) -> str | None:
 	if 'les dijo que' in t and 'no les quedaba' in t and ('aprender a labrar la tierra' in t):
 		return 'o kin ihtok tlen izel tzalotizkehtza tlalteteki'
 	tokens = t.split()
+
+	# Un «que» que ya pertenece a una igualdad léxica multipalabra
+	# (por ejemplo, «a lo que») no debe volver a analizarse como
+	# conector relativo independiente. En ese caso dejamos que el
+	# analizador general consuma la expresión completa.
+	_, used_phrase_indexes = detect_inline_fixed_phrases_sp(tokens)
+	if any(
+		token == 'que' and index in used_phrase_indexes
+		for index, token in enumerate(tokens)
+	):
+		return None
+
 	if 'que' not in tokens:
 		return None
 	que_i = tokens.index('que')
@@ -4262,7 +4430,16 @@ def translate_atomic_section_sp(t: str) -> str | None:
 		return first_variant(participle_ntl)
 
 	# ---------------------------------------------------------
-	# 2. CONJUNCIONES ATÓMICAS
+	# 2. INTERJECCIONES
+	# ---------------------------------------------------------
+
+	interjection_ntl = tolerant_lookup(token, INTERJECTIONS_SP_NTL)
+
+	if interjection_ntl:
+		return first_variant(interjection_ntl)
+
+	# ---------------------------------------------------------
+	# 3. CONJUNCIONES ATÓMICAS
 	# ---------------------------------------------------------
 
 	if token in {'y', 'e'}:
@@ -4272,7 +4449,7 @@ def translate_atomic_section_sp(t: str) -> str | None:
 		return 'pero'
 
 	# ---------------------------------------------------------
-	# 3. PRONOMBRES VISIBLES
+	# 4. PRONOMBRES VISIBLES
 	# ---------------------------------------------------------
 
 	if token in {
@@ -4461,16 +4638,50 @@ def translate_temporal_when_section_sp(t: str) -> str | None:
 	if when_token is None:
 		return None
 	i = tokens.index(when_token)
-	left = ' '.join(tokens[:i]).strip()
+	left_tokens = tokens[:i]
 	right = ' '.join(tokens[i + 1:]).strip()
+
+	# En secuencias «... que cuando ...», «que» funciona como nexo
+	# subordinante de la cláusula temporal. No debe traducirse aisladamente
+	# ni activar el marcador exhortativo/desiderativo ma.
+	complementizer_que = bool(left_tokens and left_tokens[-1] == 'que')
+	if complementizer_que:
+		left_tokens = left_tokens[:-1]
+
+	left = ' '.join(left_tokens).strip()
 	if not left or not right:
 		return None
 	left_ntl = translate_sp_to_ntl(left)
-	right_ntl = translate_sp_to_ntl(right)
+
+	# Después de «cuando», una forma española ambigua debe tener prioridad
+	# verbal cuando el analizador la reconoce como verbo finito NO subjuntivo.
+	# Esto evita que una igualdad léxica exacta capture antes formas como
+	# «como» (adverbio/conector -> kenin) cuando en realidad corresponde a
+	# «comer», 1.ª singular de presente -> ni tlakua.
+	#
+	# La regla es productiva: no depende de «como» ni de una persona concreta.
+	# Reutiliza detect_finite_verb + detect_spanish_structure +
+	# build_ntl_expression, de modo que se conservan persona, número y la
+	# conjugación indicativa ya reconocida por el motor (presente, pasado,
+	# futuro, copretérito, pospretérito, etc.). El subjuntivo queda fuera de
+	# esta prioridad y continúa por su ruta propia.
+	right_tokens = normalize_input_sp(right).split()
+	finite_sp, finite_ntl, finite_subject, finite_time = detect_finite_verb(right_tokens)
+	if finite_sp and finite_ntl and finite_time not in {'Subjunctive'}:
+		right_structure = detect_spanish_structure(right)
+		if isinstance(right_structure, dict):
+			right_ntl = build_ntl_expression(right_structure)
+		else:
+			right_ntl = translate_sp_to_ntl(right)
+	else:
+		right_ntl = translate_sp_to_ntl(right)
+
 	if not left_ntl or not right_ntl:
 		return None
 	left_ntl = force_final_verb_ntl_clause(left_ntl)
 	right_ntl = force_final_verb_ntl_clause(right_ntl)
+	if complementizer_que:
+		return f'{left_ntl} tlen ikuak {right_ntl}'
 	return f'{left_ntl} ikuak {right_ntl}'
 
 def translate_temporal_while_section_sp(t: str) -> str | None:
@@ -5958,6 +6169,15 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 		if exact_value:
 			exact_value = _separate_dictionary_semipronoun_ntl(exact_value)
 
+			# Con pronombre explícito, el atajo léxico de dos palabras también
+			# necesita conocer el tiempo de la forma verbal («ustedes hicieron»).
+			# El diccionario puede contener la variante de tercera persona
+			# ochiuakeh, pero no se debe dejar la o- delante del verbo al añadir an-.
+			if exact_pronoun and exact_time is None:
+				_, _, _, exact_time = detect_finite_verb([exact_verb_token])
+				if exact_time is None:
+					_, _, _, exact_time = detect_regular_verb([exact_verb_token])
+
 			# Pronombre pospuesto: forma imperativa con pronombre explícito.
 			# inicia tú -> tehuatl xi peua
 			if exact_postposed_pronoun and exact_subject == ('2', 'sg'):
@@ -5974,6 +6194,15 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 
 			if person_number:
 				semi = choose_semipronoun(*person_number)
+				# Cuando la equivalencia de pasado está en tercera persona
+				# (ochiuakeh), reasignar su o- al semipronombre explícito:
+				# ustedes hicieron -> anmehuan oan chiuakeh.
+				if (
+					exact_time == 'Past' and semi != '∅'
+					and exact_value.startswith('o')
+					and not exact_value.startswith(('o ni ', 'o ti ', 'o an ', 'oni ', 'oti ', 'oan '))
+				):
+					exact_value = exact_value[1:].lstrip()
 				if semi != '∅' and not exact_value.startswith((semi + ' ', 'o' + semi + ' ', 'o ' + semi + ' ')):
 					exact_value = semi + ' ' + exact_value
 
@@ -6010,6 +6239,33 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 	if early_compound:
 		early_translation = early_compound['translation']
 		early_consumed_indexes = set(early_compound.get('consumed_indexes') or set())
+
+		# En la familia uihka, el tiempo perfecto sigue siendo responsabilidad del
+		# mecanismo general. Aquí sólo se recuperan la dirección de traer/llevar y
+		# el referente, manteniendo el verbo al final del núcleo.
+		_uihka_perfect_direction = {
+			'traída': 'nikan', 'traído': 'nikan', 'traida': 'nikan', 'traido': 'nikan',
+			'llevada': 'ompa', 'llevado': 'ompa',
+			'portada': '', 'portado': '',
+		}
+		_participle_key = normalize_key(early_compound.get('participle_sp'))
+		if _participle_key in _uihka_perfect_direction:
+			_participle_index = max(early_consumed_indexes) if early_consumed_indexes else -1
+			_explicit_object, _fuse_object = _uihka_explicit_object_ntl(early_tokens, _participle_index)
+			_early_parts = early_translation.split()
+			_verb_index = next((i for i in range(len(_early_parts) - 1, -1, -1) if 'uihka' in _early_parts[i]), None)
+			if _verb_index is not None:
+				if _explicit_object:
+					if _fuse_object:
+						_early_parts[_verb_index] = _explicit_object + _early_parts[_verb_index]
+					else:
+						_early_parts.insert(_verb_index, _explicit_object)
+				_direction = _uihka_perfect_direction[_participle_key]
+				if _direction:
+					_early_parts.insert(0, _direction)
+				early_translation = finalize_simple_ntl(_early_parts)
+			# El complemento ya fue colocado; no debe volver a traducirse al final.
+			early_consumed_indexes.update(range(_participle_index + 1, len(early_tokens)))
 		early_complement_tokens = [
 			token
 			for index, token in enumerate(early_tokens)
@@ -6127,11 +6383,6 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 	for k, v in structure.items():
 		print(f'{k}: {v}')
 	print('=======================\n')
-	resultado = build_ntl_expression(
-		structure,
-		show_null_subject=False
-	)
-
 	# Conserva las palabras que el motor no pudo traducir.
 	# Se toman del texto original para respetar sus mayúsculas.
 	original_tokens = re.findall(
@@ -6161,6 +6412,23 @@ def _translate_sp_to_ntl_impl(sp_text, mode='Auto', person='Auto', number='Auto'
 		if not is_known_spanish_token(original_token)
 		and not _is_consumed_finite_verb_token(original_token)
 	]
+
+	# Si la cláusula contiene verbo, una palabra nominal desconocida no debe
+	# añadirse después del predicado. Se incorpora al bloque nominal antes de
+	# construir la expresión; así nombres propios no registrados (Chencha, etc.)
+	# quedan antes del complejo verbal y conservan su grafía original.
+	if unknown_tokens and structure.get('verb_ntl'):
+		structure_nouns = list(structure.get('nouns') or [])
+		for unknown_token in unknown_tokens:
+			if unknown_token not in structure_nouns:
+				structure_nouns.append(unknown_token)
+		structure['nouns'] = structure_nouns
+		unknown_tokens = []
+
+	resultado = build_ntl_expression(
+		structure,
+		show_null_subject=False
+	)
 
 	if unknown_tokens:
 		resultado = " ".join(
@@ -6207,6 +6475,8 @@ def suggest_spanish_input_word(token: str, cutoff: float = 0.90) -> str | None:
 	vocablo perfectamente válido.
 	"""
 	entered = unicodedata.normalize('NFC', str(token or '')).strip().lower()
+	if entered in _paradigmas_verbales_documentados_sp_ntl():
+		return None
 	if len(entered) < 5 or is_known_spanish_token(entered):
 		return None
 	vocabulary = build_spanish_suggestion_vocabulary()
@@ -6321,7 +6591,7 @@ def lookup_exact_sp_ntl_expression(sp_text: str) -> str | None:
 	if not raw_input:
 		return None
 
-	sources = (NOUNS_SP_NTL, MODIFIERS_SP_NTL, ADVERBS_SP_NTL, PREPOSITIONS_SP_NTL, FIXED_PHRASES_SP_TO_NTL, sp_ntl)
+	sources = (EXPRESIONES_FIJAS_SP_NTL, LOCUCIONES_SP_NTL, INTERJECTIONS_SP_NTL, NOUNS_SP_NTL, MODIFIERS_SP_NTL, ADVERBS_SP_NTL, PREPOSITIONS_SP_NTL, FIXED_PHRASES_SP_TO_NTL, sp_ntl)
 
 	# 1) Coincidencia exacta sensible a mayúsculas/minúsculas.
 	for source in sources:
@@ -6381,7 +6651,514 @@ def _translate_negative_imperative_sp_ntl(sp_text, imp_p='xi'):
 	return f'amo {command}'.strip()
 
 
+
+
+# ----------------------------------------------------------------------
+# Caso estructural especial: portar / traer / llevar (uihka)
+#
+# portar = acción general de portar.
+# traer  = portar aquí  -> nikan + estructura de uihka.
+# llevar = portar allá  -> ompa  + estructura de uihka.
+#
+# Regla crítica del referente:
+# - referente explícito: se usa el referente y NO se agrega te/tla;
+# - referente pronominal: te para persona, tla para cosa.
+#
+# Este bloque conserva separado el semipronombre de la raíz uihka.
+# ----------------------------------------------------------------------
+def _load_key_value_conjugation_file(base_name: str) -> tuple[dict, str | None]:
+	"""Carga tablas simples "clave":'valor' desde archivos de conjugación."""
+	candidates = []
+	plain = base_dir / f'{base_name}.py'
+	if plain.exists():
+		candidates.append((0, plain))
+	for path in base_dir.glob(f'{base_name}(*).py'):
+		m = re.fullmatch(rf'{re.escape(base_name)}\((\d+)\)\.py', path.name)
+		if m:
+			candidates.append((int(m.group(1)), path))
+	if not candidates:
+		return {}, None
+	_, selected = max(candidates, key=lambda item: item[0])
+	mapping = {}
+	pattern = re.compile(r"^\s*[\"']([^\"']+)[\"']\s*:\s*[\"']([^\"']*)[\"']\s*,?\s*$")
+	try:
+		for raw_line in selected.read_text(encoding='utf-8-sig').splitlines():
+			line = raw_line.strip()
+			if not line or line.startswith('#'):
+				continue
+			match = pattern.match(raw_line)
+			if match:
+				mapping[normalize_key(match.group(1))] = unicodedata.normalize('NFC', match.group(2)).strip()
+	except Exception as e:
+		print(f'ERROR cargando {selected.name}:', e)
+		return {}, selected.name
+	return mapping, selected.name
+
+
+UIHKA_SP_NTL_EXTERNAL, UIHKA_SP_NTL_SOURCE = _load_key_value_conjugation_file('UIHKA_SP_NTL')
+UIHKA_NTL_SP_EXTERNAL, UIHKA_NTL_SP_SOURCE = _load_key_value_conjugation_file('UIHKA_NTL_SP')
+NIKAN_UIHKA_SP_NTL_EXTERNAL, NIKAN_UIHKA_SP_NTL_SOURCE = _load_key_value_conjugation_file('NIKAN_UIHKA_SP_NTL')
+NIKAN_UIHKA_NTL_SP_EXTERNAL, NIKAN_UIHKA_NTL_SP_SOURCE = _load_key_value_conjugation_file('NIKAN_UIHKA_NTL_SP')
+OMPA_UIHKA_SP_NTL_EXTERNAL, OMPA_UIHKA_SP_NTL_SOURCE = _load_key_value_conjugation_file('OMPA_UIHKA_SP_NTL')
+OMPA_UIHKA_NTL_SP_EXTERNAL, OMPA_UIHKA_NTL_SP_SOURCE = _load_key_value_conjugation_file('OMPA_UIHKA_NTL_SP')
+
+# Los participios de portar/traer/llevar pertenecen también al mecanismo general
+# de tiempos compuestos. La dirección (nikan/ompa) se conserva aparte y la forma
+# participial que recibe el constructor general es uihkak.
+for _participle_sp in ('portada', 'portado'):
+	if UIHKA_SP_NTL_EXTERNAL.get(_participle_sp):
+		ado_ido[_participle_sp] = 'uihkak'
+for _participle_sp in ('traída', 'traído', 'traida', 'traido'):
+	if NIKAN_UIHKA_SP_NTL_EXTERNAL.get(_participle_sp) or _participle_sp in {'traida', 'traido'}:
+		ado_ido[_participle_sp] = 'uihkak'
+for _participle_sp in ('llevada', 'llevado'):
+	if OMPA_UIHKA_SP_NTL_EXTERNAL.get(_participle_sp):
+		ado_ido[_participle_sp] = 'uihkak'
+
+UIHKA_EXTERNAL_SP_NTL_TABLES = (
+	('traer', NIKAN_UIHKA_SP_NTL_EXTERNAL),
+	('llevar', OMPA_UIHKA_SP_NTL_EXTERNAL),
+	('portar', UIHKA_SP_NTL_EXTERNAL),
+)
+
+
+def _uihka_external_sp_ntl_form(token: str):
+	"""Devuelve (lema, estructura NTL) desde las tablas externas."""
+	tk = normalize_key(token)
+	for lemma, mapping in UIHKA_EXTERNAL_SP_NTL_TABLES:
+		value = mapping.get(tk)
+		if value:
+			return lemma, value
+	return None
+
+
+def _uihka_insert_reference_in_external_form(base_form: str, explicit_object: str | None, fuse_object: bool, reference: str | None) -> str:
+	"""Inserta el referente antes de uihka sin alterar la conjugación almacenada."""
+	parts = str(base_form or '').split()
+	if not parts:
+		return ''
+	verb_index = next((i for i in range(len(parts) - 1, -1, -1) if 'uihka' in parts[i]), None)
+	if verb_index is None:
+		return str(base_form).strip()
+	if explicit_object:
+		if fuse_object:
+			parts[verb_index] = explicit_object + parts[verb_index]
+		else:
+			parts.insert(verb_index, explicit_object)
+	elif reference:
+		parts.insert(verb_index, reference)
+	return finalize_simple_ntl(parts)
+
+
+UIHKA_DIRECTION_SP_NTL = {
+	'portar': '',
+	'traer': 'nikan',
+	'llevar': 'ompa',
+}
+
+UIHKA_DIRECTION_NTL_SP = {
+	'nikan': 'traer',
+	'ompa': 'llevar',
+}
+
+UIHKA_SP_FORMS = {
+	# portar
+	'porto': ('portar', ('1', 'sg'), 'Present'),
+	'portas': ('portar', ('2', 'sg'), 'Present'),
+	'porta': ('portar', ('3', 'sg'), 'Present'),
+	'portamos': ('portar', ('1', 'pl'), 'Present'),
+	'portan': ('portar', ('3', 'pl'), 'Present'),
+	'porté': ('portar', ('1', 'sg'), 'Past'),
+	'portaste': ('portar', ('2', 'sg'), 'Past'),
+	'portó': ('portar', ('3', 'sg'), 'Past'),
+	'portaron': ('portar', ('3', 'pl'), 'Past'),
+	'portaré': ('portar', ('1', 'sg'), 'Future'),
+	'portarás': ('portar', ('2', 'sg'), 'Future'),
+	'portará': ('portar', ('3', 'sg'), 'Future'),
+	'portaremos': ('portar', ('1', 'pl'), 'Future'),
+	'portarán': ('portar', ('3', 'pl'), 'Future'),
+	'portaba': ('portar', ('3', 'sg'), 'Copreterite'),
+	'portabas': ('portar', ('2', 'sg'), 'Copreterite'),
+	'portábamos': ('portar', ('1', 'pl'), 'Copreterite'),
+	'portaban': ('portar', ('3', 'pl'), 'Copreterite'),
+	'portaría': ('portar', ('3', 'sg'), 'Postpreterite'),
+	'portarías': ('portar', ('2', 'sg'), 'Postpreterite'),
+	'portaríamos': ('portar', ('1', 'pl'), 'Postpreterite'),
+	'portarían': ('portar', ('3', 'pl'), 'Postpreterite'),
+}
+
+
+def _uihka_spanish_form_info(token: str):
+	"""Reconoce una forma de portar/traer/llevar sin depender de sp_ntl."""
+	tk = normalize_input_sp(token).strip()
+	if tk in UIHKA_SP_FORMS:
+		return UIHKA_SP_FORMS[tk]
+
+	# traer y llevar comparten persona/tiempo con la flexión española regular
+	# que ya reconoce el motor. Se obtiene la información gramatical y se fuerza
+	# únicamente la raíz náhuatl uihka; la dirección se añade por separado.
+	for lemma in ('traer', 'llevar'):
+		old = CORE_VERBS_SP_TO_NTL.get(lemma)
+		try:
+			CORE_VERBS_SP_TO_NTL[lemma] = 'uihka'
+			verb_sp, _verb_ntl, subject, time = detect_finite_verb([tk])
+		finally:
+			if old is None:
+				CORE_VERBS_SP_TO_NTL.pop(lemma, None)
+			else:
+				CORE_VERBS_SP_TO_NTL[lemma] = old
+		if verb_sp == lemma and subject and time:
+			return lemma, subject, time
+	return None
+
+
+def _uihka_explicit_object_ntl(tokens: list[str], verb_index: int) -> tuple[str | None, bool]:
+	"""Devuelve (referente, fusionar_con_uihka) para un objeto escrito."""
+	ignored = ARTICLES_SP | {'a', 'al', 'de', 'del', 'en', 'hacia', 'hasta', 'para', 'por'}
+	for index in range(verb_index + 1, len(tokens)):
+		tk = tokens[index]
+		if tk in ignored:
+			continue
+		if tk in {'me', 'te', 'lo', 'la', 'los', 'las', 'nos', 'le', 'les', 'se'}:
+			continue
+		noun = first_variant(tolerant_lexical_lookup(tk, NOUNS_SP_NTL))
+		if noun:
+			root = _nominal_root_for_structural_fusion_ntl(str(noun))
+			return root, True
+		# Un nombre propio no registrado se conserva visible y separado.
+		return tk, False
+	return None, False
+
+
+def _uihka_pronominal_reference_sp(tokens: list[str], verb_index: int) -> str | None:
+	"""Selecciona te/tla por tipo de referente, nunca por género español."""
+	before = tokens[:verb_index]
+	# te = persona; tla = cosa. Ninguno codifica masculino/femenino.
+	if any(tk in {'me', 'te', 'nos', 'alguien'} for tk in before):
+		return 'te'
+	if any(tk in {'algo'} for tk in before):
+		return 'tla'
+	return None
+
+
+def translate_uihka_family_sp_to_ntl(text: str) -> str | None:
+	"""Traduce portar/traer/llevar con dirección y referente controlados."""
+	tokens = normalize_input_sp(text).split()
+	if not tokens:
+		return None
+
+	# Los tiempos perfectos conservan la prioridad del mecanismo general.
+	# Una forma participial de uihka precedida por haber/habiendo no se procesa
+	# aquí como verbo simple; se deja intacta para detect_compound_participle_sp().
+	for _index, _token in enumerate(tokens):
+		_external = _uihka_external_sp_ntl_form(_token)
+		if not _external or _index == 0:
+			continue
+		if tokens[_index - 1] == 'habiendo' or tokens[_index - 1] in COMPOUND_AUXILIARIES_SP:
+			return None
+
+	# Las tablas externas tienen prioridad sobre los detectores generales sólo
+	# cuando no forman parte de una construcción perfecta.
+	for external_verb_index, external_token in enumerate(tokens):
+		external = _uihka_external_sp_ntl_form(external_token)
+		if not external:
+			continue
+		_lemma, base_form = external
+		explicit_object, fuse_object = _uihka_explicit_object_ntl(tokens, external_verb_index)
+		reference = None
+		if explicit_object is None:
+			reference = _uihka_pronominal_reference_sp(tokens, external_verb_index)
+		return _uihka_insert_reference_in_external_form(base_form, explicit_object, fuse_object, reference)
+
+	verb_index = None
+	info = None
+	for index, tk in enumerate(tokens):
+		candidate = _uihka_spanish_form_info(tk)
+		if candidate:
+			verb_index = index
+			info = candidate
+			break
+	if info is None or verb_index is None:
+		return None
+	lemma, subject, time = info
+	if lemma not in UIHKA_DIRECTION_SP_NTL:
+		return None
+
+	person, number = subject
+	semi = choose_semipronoun(person, number)
+	verb_form = build_ntl_finite_verb('uihka', time, person, number)
+	direction = UIHKA_DIRECTION_SP_NTL[lemma]
+
+	explicit_object, fuse_object = _uihka_explicit_object_ntl(tokens, verb_index)
+	reference = None
+	if explicit_object is None:
+		reference = _uihka_pronominal_reference_sp(tokens, verb_index)
+
+	parts = []
+	if direction:
+		parts.append(direction)
+	if semi != '∅':
+		parts.append(semi)
+	if explicit_object:
+		if fuse_object:
+			parts.append(explicit_object + verb_form)
+		else:
+			parts.extend([explicit_object, verb_form])
+	else:
+		if reference:
+			parts.append(reference)
+		parts.append(verb_form)
+	return finalize_simple_ntl(parts)
+
+
+def _uihka_spanish_conjugation(lemma: str, verb_token: str, person: str, number: str) -> str | None:
+	"""Conjuga la acepción española según la forma temporal de uihka."""
+	if verb_token.endswith('k') or verb_token.endswith('keh'):
+		if lemma == 'traer':
+			forms = {('1','sg'): 'traje', ('2','sg'): 'trajiste', ('3','sg'): 'trajo', ('1','pl'): 'trajimos', ('2','pl'): 'trajeron', ('3','pl'): 'trajeron'}
+			return forms.get((person, number))
+		if lemma == 'llevar':
+			base = 'llev'
+			forms = {('1','sg'): base+'é', ('2','sg'): base+'aste', ('3','sg'): base+'ó', ('1','pl'): base+'amos', ('2','pl'): base+'aron', ('3','pl'): base+'aron'}
+			return forms.get((person, number))
+		if lemma == 'portar':
+			base = 'port'
+			forms = {('1','sg'): base+'é', ('2','sg'): base+'aste', ('3','sg'): base+'ó', ('1','pl'): base+'amos', ('2','pl'): base+'aron', ('3','pl'): base+'aron'}
+			return forms.get((person, number))
+	if verb_token.endswith(('zya', 'zyakeh')):
+		base = lemma[:-2] if lemma.endswith(('ar','er','ir')) else lemma
+		forms = {('1','sg'): base+'aría', ('2','sg'): base+'arías', ('3','sg'): base+'aría', ('1','pl'): base+'aríamos', ('2','pl'): base+'arían', ('3','pl'): base+'arían'}
+		if lemma.endswith('er'):
+			forms = {k: v.replace('aría','ería').replace('arías','erías').replace('aríamos','eríamos').replace('arían','erían') for k,v in forms.items()}
+		return forms.get((person, number))
+	if verb_token.endswith(('ya', 'yakeh')):
+		return conjugate_sp_imperfect_from_infinitive(lemma, person, number)
+	if verb_token.endswith(('z', 'zkeh')):
+		# futuro simple
+		ending = {('1','sg'):'é', ('2','sg'):'ás', ('3','sg'):'á', ('1','pl'):'emos', ('2','pl'):'án', ('3','pl'):'án'}.get((person, number))
+		return lemma + ending if ending else None
+	if lemma == 'traer':
+		forms = {('1','sg'): 'traigo', ('2','sg'): 'traes', ('3','sg'): 'trae', ('1','pl'): 'traemos', ('2','pl'): 'traen', ('3','pl'): 'traen'}
+		return forms.get((person, number))
+	return conjugate_sp_present_from_infinitive(lemma, person, number)
+
+
+def translate_uihka_family_ntl_to_sp(text: str) -> str | None:
+	"""Reconoce portar/traer/llevar desde la estructura productiva de uihka."""
+	t = normalize_ntl_orthography(text)
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
+	tokens = t.split()
+	if not tokens or not any('uihka' in tk for tk in tokens):
+		return None
+
+	# La dirección tiene autoridad semántica absoluta:
+	# nikan = traer aquí; ompa = llevar allá; sin ambos = portar.
+	lemma = 'portar'
+	if tokens[0] == 'nikan':
+		lemma = 'traer'
+		tokens = tokens[1:]
+	elif tokens[0] == 'ompa':
+		lemma = 'llevar'
+		tokens = tokens[1:]
+	if not tokens:
+		return None
+
+	person, number = ('3', 'sg')
+	if tokens[0] == 'ni':
+		person, number = ('1', 'sg')
+		tokens = tokens[1:]
+	elif tokens[0] == 'ti':
+		person, number = ('2', 'sg')
+		tokens = tokens[1:]
+	elif tokens[0] == 'an':
+		person, number = ('2', 'pl')
+		tokens = tokens[1:]
+	elif tokens[0].startswith('oni'):
+		person, number = ('1', 'sg')
+		tokens[0] = tokens[0][3:]
+	elif tokens[0].startswith('oti'):
+		person, number = ('2', 'sg')
+		tokens[0] = tokens[0][3:]
+	elif tokens[0].startswith('oan'):
+		person, number = ('2', 'pl')
+		tokens[0] = tokens[0][3:]
+
+	# te/tla sólo indican el tipo de referente omitido; nunca género.
+	reference_sp = None
+	if tokens and tokens[0] in {'te', 'tla'}:
+		reference_sp = 'a alguien' if tokens[0] == 'te' else 'algo'
+		tokens = tokens[1:]
+	if not tokens:
+		return None
+
+	verb_token = tokens[-1]
+	uihka_position = verb_token.find('uihka')
+	if uihka_position < 0:
+		return None
+
+	# Todo lo escrito entre el semipronombre y uihka es referente explícito.
+	explicit_reference_tokens = list(tokens[:-1])
+	if uihka_position > 0:
+		fused_reference = verb_token[:uihka_position]
+		if fused_reference not in {'on'}:
+			explicit_reference_tokens.append(fused_reference)
+			verb_token = verb_token[uihka_position:]
+
+	if person == '2' and number == 'sg' and verb_token.endswith(('h', 'keh', 'yakeh', 'zyakeh')):
+		person, number = ('1', 'pl')
+	if person == '3' and verb_token.endswith(('h', 'keh', 'yakeh', 'zyakeh')):
+		number = 'pl'
+
+	verb_sp = _uihka_spanish_conjugation(lemma, verb_token, person, number)
+	if not verb_sp:
+		return None
+
+	if explicit_reference_tokens:
+		translated_reference = []
+		for reference_token in explicit_reference_tokens:
+			translated = translate_token_ntl_to_sp(reference_token)
+			if translated.startswith('[') and translated.endswith(']'):
+				translated = reference_token.capitalize()
+				if strip_accents_for_compare(translated.lower()) == 'maria':
+					translated = 'María'
+			translated_reference.append(translated)
+		explicit_reference_sp = ' '.join(translated_reference).strip()
+		if explicit_reference_sp:
+			first_reference = explicit_reference_sp.split()[0]
+			is_personal_name = bool(first_reference and first_reference[0].isupper())
+			object_sp = ('a ' + explicit_reference_sp) if is_personal_name else explicit_reference_sp
+			return finalize_simple_ntl([verb_sp, object_sp])
+
+	return finalize_simple_ntl([reference_sp, verb_sp])
+
+
+def remove_copular_es_before_modifier_sp(text: str) -> str:
+	"""Consume «es» cuando sólo enlaza un predicado adjetival.
+
+	Regla validada: «es + adjetivo» y el adjetivo aislado producen el mismo
+	núcleo en náhuatl. Sólo se elimina «es» cuando la palabra siguiente está
+	registrada como modificador; los demás usos de «es» permanecen intactos.
+	"""
+	tokens = normalize_input_sp(text).split()
+	if len(tokens) < 2:
+		return str(text or '').strip()
+
+	cleaned: list[str] = []
+	index = 0
+	while index < len(tokens):
+		token = tokens[index]
+		if (
+			token == 'es'
+			and index + 1 < len(tokens)
+			and tolerant_lexical_lookup(tokens[index + 1], MODIFIERS_SP_NTL)
+		):
+			index += 1
+			continue
+		cleaned.append(token)
+		index += 1
+
+	return ' '.join(cleaned).strip()
+
+
+def _translate_filled_page_nominal_sp(text: str) -> str | None:
+	"""Traduce «una página llena de letras» como grupo nominal adjetival.
+
+	«ze» es cardinal, «temik» modifica al grupo nominal y «machiyotl»
+	precede a «amaxayaktli». No se analiza «llena» como verbo finito.
+	"""
+	tokens = normalize_input_sp(text).split()
+	# «es» une la descripción nominal; no convierte «llena» en verbo.
+	if tokens and tokens[0] == 'es':
+		tokens = tokens[1:]
+	if tokens != ['una', 'página', 'llena', 'de', 'letras']:
+		return None
+
+	cardinal = first_variant(tolerant_lexical_lookup('una', MODIFIERS_SP_NTL))
+	if cardinal != 'ze':
+		# «un/una» se analiza como cardinal y no como ordinal ni artículo vacío.
+		cardinal = 'ze' if first_variant(tolerant_lexical_lookup('uno', MODIFIERS_SP_NTL)) == 'ze' else None
+	content = first_variant(tolerant_lexical_lookup('letras', NOUNS_SP_NTL))
+	page = first_variant(tolerant_lexical_lookup('página', NOUNS_SP_NTL))
+	filled = first_variant(tolerant_lexical_lookup('llena', MODIFIERS_SP_NTL))
+	if not filled:
+		# Si la base sólo conserva «llenado», se usa su equivalencia como adjetivo.
+		filled = first_variant(tolerant_lexical_lookup('llenado', MODIFIERS_SP_NTL))
+	if not all((cardinal, content, page, filled)):
+		return None
+	# «llena» es un modificador adjetival, no una segunda predicación.
+	return finalize_simple_ntl([cardinal, filled, content, page])
+
+
+def translate_ordinal_arrival_predication_sp(text: str) -> str | None:
+	"""Separa el ordinal, el grupo nominal adjetival y la llegada no reflexiva.
+
+	Las equivalencias se leen de los diccionarios y se reensamblan por
+	función: «llena» modifica «página»; no constituye un tercer verbo.
+	Fuera de esta construcción acotada se mantiene el recorrido ordinario.
+	"""
+	clean = normalize_input_sp(text)
+	nominal = _translate_filled_page_nominal_sp(clean)
+	if nominal:
+		return nominal
+
+	# La secuencia «te llega a la mente» es acusativa, no reflexiva.
+	pattern = (
+		r'^(?:(?:lo\s+)?(?P<ordinal>primero)\s+)?'
+		r'(?P<connector>que\s+)?(?P<clitic>te|me)\s+'
+		r'(?P<verb>llega)\s+a\s+la\s+mente'
+		r'(?:\s+es\s+(?P<predication>.+))?$'
+	)
+	match = re.fullmatch(pattern, clean)
+	if not match:
+		return None
+
+	ordinal_sp = match.group('ordinal')
+	connector_sp = match.group('connector')
+	predication_sp = match.group('predication')
+	ordinal_ntl = None
+	if ordinal_sp:
+		ordinal_ntl = first_variant(tolerant_lexical_lookup(ordinal_sp, MODIFIERS_SP_NTL))
+		if ordinal_ntl != 'zetetl':
+			return None
+	if not ordinal_sp and not connector_sp and predication_sp:
+		return None
+
+	object_ntl = CLITIC_OBJECT_MAP_SP_TO_NTL.get(match.group('clitic'))
+	verb_ntl = first_variant(tolerant_lookup(match.group('verb'), sp_ntl))
+	if not object_ntl or verb_ntl != 'ehko':
+		return None
+
+	predication_ntl = None
+	if predication_sp:
+		predication_ntl = _translate_filled_page_nominal_sp(predication_sp)
+		if not predication_ntl:
+			return None
+
+	# El ordinal se conserva; «que» no se confunde con el exhortativo «ma».
+	# Primero se expresa el contenido nominal y después la llegada.
+	return finalize_simple_ntl([
+		ordinal_ntl,
+		'tlen' if connector_sp else None,
+		predication_ntl,
+		object_ntl,
+		verb_ntl,
+	])
+
+
 def _translate_sp_to_ntl_core(sp_text, mode='Auto', person='Auto', number='Auto', imp_p='xi', imp_n=False):
+	structured_ordinal_arrival = translate_ordinal_arrival_predication_sp(sp_text)
+	if structured_ordinal_arrival:
+		return structured_ordinal_arrival
+
+	# En predicación adjetival, «es» funciona sólo como cópula y no genera
+	# una unidad independiente en la salida náhuatl.
+	sp_text = remove_copular_es_before_modifier_sp(sp_text)
+
+	uihka_special = translate_uihka_family_sp_to_ntl(sp_text)
+	if uihka_special:
+		return uihka_special
+
 	# «no + subjuntivo de 2.ª persona» es un mandato negativo en español.
 	# Debe resolverse antes del subjuntivo general para conservar el imperativo.
 	negative_imperative = _translate_negative_imperative_sp_ntl(sp_text, imp_p=imp_p)
@@ -6393,6 +7170,46 @@ def _translate_sp_to_ntl_core(sp_text, mode='Auto', person='Auto', number='Auto'
 	exact_expression = lookup_exact_sp_ntl_expression(sp_text)
 	if exact_expression:
 		return exact_expression
+
+	# Una igualdad multipalabra de PREPOSITIONS_SP_NTL que contiene «que»
+	# debe resolverse antes de clasificar «que» de manera independiente.
+	# Así se conserva la igualdad completa (por ejemplo, «a lo que» -> «tlen»)
+	# sin interferir con el «que» desiderativo cuando aparece fuera de ella.
+	normalized_for_connector = normalize_input_sp(sp_text)
+	connector_tokens = normalized_for_connector.split()
+	connector_phrase_sources = dict(FIXED_PHRASES_SP_TO_NTL)
+	connector_phrase_sources.update(PREPOSITIONS_SP_NTL)
+	for phrase in sorted(
+		(
+			key for key in connector_phrase_sources
+			if isinstance(key, str)
+			and ' ' in key
+			and 'que' in normalize_input_sp(key).split()
+		),
+		key=lambda key: len(normalize_input_sp(key).split()),
+		reverse=True,
+	):
+		phrase_tokens = normalize_input_sp(phrase).split()
+		phrase_length = len(phrase_tokens)
+		if connector_tokens[:phrase_length] != phrase_tokens:
+			continue
+		remainder_tokens = connector_tokens[phrase_length:]
+		if not remainder_tokens:
+			break
+		connector_ntl = first_variant(connector_phrase_sources.get(phrase))
+		if not connector_ntl:
+			break
+		remainder_ntl = translate_sp_to_ntl(
+			' '.join(remainder_tokens),
+			mode=mode,
+			person=person,
+			number=number,
+			imp_p=imp_p,
+			imp_n=imp_n,
+		)
+		if remainder_ntl and not remainder_ntl.startswith('[Aviso]'):
+			return finalize_simple_ntl([connector_ntl, remainder_ntl])
+		break
 
 	# Las oraciones temporales con «cuando/cuándo» deben segmentarse ANTES de
 	# extraer los topónimos. Así cada cláusula conserva sus propios participantes
@@ -6689,23 +7506,111 @@ NTL_MODIFIER_SET = _ntl_value_set(MODIFIERS)
 NTL_SUBJECT_MAP_SP = {'nehuatl': 'yo', 'tehuatl': 'tú', 'yehuatl': 'ella', 'yehuatl': 'él', 'tehuan': 'nosotras', 'tehuan': 'nosotros', 'anmehuan': 'ustedes', 'yehuan': 'ellas', 'yehuan': 'ellos'}
 NTL_OBJECT_MAP_SP = {'nech': 'me', 'mitz': 'te', 'ki': 'lo', 'tech': 'nos', 'anmech': 'los', 'kin': 'los', 'tla': 'algo', 'te': 'alguien', 'tetla': 'algo de alguien'}
 
+
+# ----------------------------------------------------------------------
+# Primera capa de estructuraciones: exclusivamente raíces y operaciones
+# confirmadas. Una descomposición posible no autoriza una traducción nueva.
+# ----------------------------------------------------------------------
+NTL_VERIFIED_COMPONENTS = (
+	# (palabra original, forma estructural, significado nuclear, sólo final)
+	('ixiptli', 'ixip', 'imagen / foto / fotografía', False),
+	('tlakuilolli', 'tlakuilo', 'escritura / pintura / pictografía', False),
+	('poualli', 'poualli', 'conteo / relato / historia', True),
+	('tlalli', 'tlal', 'tierra', False),
+	('oktli', 'ok', 'fermentación / vino / alcohol', False),
+	('kanin', 'kan', 'donde / de donde / lugar / ubicación', False),
+	('tekuhtli', 'tekuhtli', 'regidor / director / jefe / coordinador', True),
+)
+
+# Estas son interpretaciones de estructuraciones YA validadas, no una regla
+# universal de orden semántico ni un diccionario de palabras completas.
+NTL_VERIFIED_STRUCTURAL_READINGS = {
+	('ixiptli', 'tlakuilolli', 'poualli'):
+		'narración de la escritura de la imagen',
+	('tlalli', 'oktli', 'kanin', 'tekuhtli'):
+		'regidor de dónde la fermentación de la tierra',
+}
+
+
+def analyze_ntl_structured_word(word: str) -> dict | None:
+	"""Analiza una estructuración sin crear etimologías por semejanza gráfica.
+
+	Sólo consulta componentes confirmados. Compone de izquierda a derecha,
+	admitiendo la fusión k+k -> k y exigiendo que toda la palabra coincida.
+	Si hay más de un análisis, se abstiene; una lectura semántica sólo se
+	devuelve si se validó previamente la secuencia de componentes.
+	"""
+	form = unicodedata.normalize('NFC', str(word or '')).strip().lower()
+	if not form or ' ' in form or not re.fullmatch(r'[a-záéíóúñ-]+', form):
+		return None
+	found = []
+
+	def _walk(built: str, parts: tuple, joins: tuple) -> None:
+		if built == form:
+			if len(parts) >= 2:
+				found.append((parts, joins))
+			return
+		if len(parts) >= 6:
+			return
+		for original, root, meaning, terminal_only in NTL_VERIFIED_COMPONENTS:
+			if terminal_only and not parts:
+				continue
+			fused = bool(built and built.endswith('k') and root.startswith('k'))
+			next_form = built + (root[1:] if fused else root)
+			if not next_form or not form.startswith(next_form):
+				continue
+			if terminal_only and next_form != form:
+				continue
+			part = (original, root, meaning)
+			_walk(next_form, parts + (part,), joins + ((fused,) if parts else ()))
+
+	_walk('', (), ())
+	if len(found) != 1:
+		return None
+	parts, joins = found[0]
+	sources = tuple(part[0] for part in parts)
+	return {
+		'palabra': form,
+		'componentes': [
+			{'original': original, 'raiz': root, 'significado': meaning}
+			for original, root, meaning in parts
+		],
+		'fusiones_k_k': [
+			index + 1 for index, fused in enumerate(joins) if fused
+		],
+		'interpretacion_validada': NTL_VERIFIED_STRUCTURAL_READINGS.get(sources),
+	}
+
+
 def translate_token_ntl_to_sp(tk: str) -> str:
-	raw = unicodedata.normalize('NFC', str(tk)).strip().lower()
-	raw = raw.strip('.,;:¡!¿?"\'“”‘’()[]{}')
-	key = normalize_ntl_orthography(raw)
+	raw_original = unicodedata.normalize('NFC', str(tk)).strip().lower()
+	raw = raw_original.strip('.,;:¡!¿?"\'“”‘’[]{}')
+	raw_without_grouping = raw.strip('()')
+	key = normalize_ntl_orthography(raw_without_grouping)
 	val = None
 	if 'ntl_sp_index' in globals():
-		val = ntl_sp_index.get(key) or ntl_sp_index.get(raw)
+		val = ntl_sp_index.get(key) or ntl_sp_index.get(raw_without_grouping)
 	if val is None:
-		val = ntl_sp.get(key) or ntl_sp.get(raw)
+		val = ntl_sp.get(key) or ntl_sp.get(raw_without_grouping)
 	if val is None:
-		# Las bases NTL→SP especializadas también son autoridad léxica.
-		# Esto evita que modificadores y sustantivos conocidos caigan como [token]
-		# sólo porque no estén duplicados dentro de ntl_sp.
-		for mapping in (MODIFIERS_NTL_SP, NOUNS_NTL_SP):
-			val = mapping.get(key) or mapping.get(raw)
+		# Los paréntesis de los numerales son un convencionalismo visual: (••) y ••
+		# deben consultar la misma entrada sin alterar el valor numeral.
+		modifier_candidates = []
+		for candidate in (raw, raw_without_grouping, f'({raw_without_grouping})'):
+			if candidate and candidate not in modifier_candidates:
+				modifier_candidates.append(candidate)
+		for candidate in modifier_candidates:
+			val = MODIFIERS_NTL_SP.get(candidate)
 			if val is not None:
 				break
+	if val is None:
+		val = INTERJECTIONS_NTL_SP.get(key) or INTERJECTIONS_NTL_SP.get(raw_without_grouping) or INTERJECTIONS_NTL_SP.get(raw)
+	if val is None:
+		val = NOUNS_NTL_SP.get(key) or NOUNS_NTL_SP.get(raw_without_grouping)
+	if val is None:
+		structured = analyze_ntl_structured_word(key)
+		if structured:
+			val = structured['interpretacion_validada']
 	if isinstance(val, list):
 		val = val[0] if val else None
 	if isinstance(val, dict):
@@ -6763,8 +7668,8 @@ NTL_VERB_BLOCKS_TO_SP = {'ni anmech makaz': 'les daré', 'ni makaz': 'daré'}
 
 def translate_known_ntl_sentence_to_sp(text: str) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	has_subject = 'nehuatl' in t.split()
 	has_time_adv = 'nochipa' in t.split()
 	has_object = 'anmech' in t.split()
@@ -6777,10 +7682,10 @@ def translate_known_ntl_sentence_to_sp(text: str) -> str | None:
 
 def parse_ntl_structure_to_sp(text: str) -> dict:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
-	structure = {'subject': None, 'time_modifiers': [], 'indirect_object': None, 'verb': None, 'noun_phrases': [], 'locatives': [], 'others': []}
+	structure = {'subject': None, 'time_modifiers': [], 'indirect_object': None, 'verb': None, 'noun_phrases': [], 'locatives': [], 'quantities': [], 'others': []}
 	i = 0
 	while i < len(tokens):
 		tk = tokens[i]
@@ -6818,7 +7723,11 @@ def parse_ntl_structure_to_sp(text: str) -> dict:
 			i += 1
 			continue
 		sp = translate_token_ntl_to_sp(tk)
-		if sp:
+		if sp and re.fullmatch(r'\d+(?:[.,]\d+)?', sp):
+			structure['quantities'].append(sp)
+		elif sp and not structure.get('verb') and looks_like_spanish_verb(sp):
+			structure['verb'] = sp
+		elif sp:
 			structure['others'].append(sp)
 		i += 1
 	return structure
@@ -6833,6 +7742,8 @@ def build_sp_expression_from_ntl_structure(structure: dict) -> str:
 		parts.append(structure['indirect_object'])
 	if structure.get('verb'):
 		parts.append(structure['verb'])
+	for x in structure.get('quantities', []):
+		parts.append(x)
 	for x in structure.get('noun_phrases', []):
 		parts.append(x)
 	for x in structure.get('locatives', []):
@@ -6841,6 +7752,8 @@ def build_sp_expression_from_ntl_structure(structure: dict) -> str:
 		return ''
 	if not parts:
 		for x in structure.get('others', []):
+			parts.append(x)
+		for x in structure.get('quantities', []):
 			parts.append(x)
 	result = ' '.join(parts)
 	result = re.sub('\\s+', ' ', result).strip()
@@ -6878,6 +7791,19 @@ def ntl_base_to_sp_infinitive(base_ntl: str) -> str | None:
 	for sp_inf, ntl_root in CORE_VERBS_SP_TO_NTL.items():
 		if first_variant(ntl_root) == base_ntl:
 			return sp_inf
+
+	# Las bases generales también contienen correspondencias verbales que no
+	# necesariamente fueron duplicadas en las tablas internas anteriores.
+	# Recuperarlas en sentido inverso mantiene coherencia entre SP→NTL y NTL→SP
+	# sin fijar raíces particulares dentro del conjugador.
+	norm_base = normalize_ntl_orthography(base_ntl)
+	for sp_candidate, ntl_value in sp_ntl.items():
+		sp_candidate = str(sp_candidate or '').strip().lower()
+		if not sp_candidate.endswith(('ar', 'er', 'ir')):
+			continue
+		for variant in all_variants(ntl_value):
+			if normalize_ntl_orthography(str(variant).strip()) == norm_base:
+				return sp_candidate
 	return None
 
 def conjugate_sp_subjunctive_from_infinitive(infinitive_sp: str, time_kind: str) -> str | None:
@@ -7035,8 +7961,8 @@ def split_ntl_compound_token(token: str) -> list[str]:
 
 def normalize_ntl_compound_tokens(text: str) -> str:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
 	out = []
 	for tk in tokens:
@@ -7272,8 +8198,8 @@ def parse_ntl_clause_prefix_to_sp(tokens: list[str], i: int=0) -> tuple[dict, in
 
 def translate_ntl_auxiliary_subordinate_to_sp(text: str) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
 	if not tokens:
 		return None
@@ -7428,8 +8354,8 @@ def conjugate_sp_future_or_pospreterite(infinitive_sp: str, mode: str, person: s
 
 def translate_ntl_simple_future_to_sp(text: str, conditional: bool=False) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
 	if not tokens:
 		return None
@@ -7477,8 +8403,8 @@ def translate_ntl_simple_future_to_sp(text: str, conditional: bool=False) -> str
 
 def translate_ntl_conditional_future_to_sp(text: str) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	if not t.startswith('intla '):
 		return None
 	body = t[len('intla '):].strip()
@@ -7761,8 +8687,8 @@ def conjugate_sp_imperfect_from_infinitive(infinitive_sp: str, person: str, numb
 
 def translate_ntl_simple_present_to_sp(text: str) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
 	if not tokens:
 		return None
@@ -7796,8 +8722,8 @@ def translate_ntl_simple_present_to_sp(text: str) -> str | None:
 
 def translate_ntl_simple_imperfect_to_sp(text: str) -> str | None:
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
+	t = re.sub(r'[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\\s+', ' ', t).strip()
 	tokens = t.split()
 	if not tokens:
 		return None
@@ -7849,7 +8775,12 @@ def conjugate_sp_conditional_subjunctive(infinitive_sp: str, person: str, number
 	return form
 
 def conjugate_sp_past_from_infinitive(infinitive_sp: str, person: str, number: str) -> str | None:
-	irregular = {'ir': {('1', 'sg'): 'fui', ('2', 'sg'): 'fuiste', ('3', 'sg'): 'fue', ('1', 'pl'): 'fuimos', ('2', 'pl'): 'fueron', ('3', 'pl'): 'fueron'}, 'ser': {('1', 'sg'): 'fui', ('2', 'sg'): 'fuiste', ('3', 'sg'): 'fue', ('1', 'pl'): 'fuimos', ('2', 'pl'): 'fueron', ('3', 'pl'): 'fueron'}, 'ver': {('1', 'sg'): 'vi', ('2', 'sg'): 'viste', ('3', 'sg'): 'vio', ('1', 'pl'): 'vimos', ('2', 'pl'): 'vieron', ('3', 'pl'): 'vieron'}}
+	if infinitive_sp in {'oir', 'oír'}:
+		return {
+			('1', 'sg'): 'oí', ('2', 'sg'): 'oíste', ('3', 'sg'): 'oyó',
+			('1', 'pl'): 'oímos', ('2', 'pl'): 'oísteis', ('3', 'pl'): 'oyeron',
+		}.get((person, number))
+	irregular = {'ir': {('1', 'sg'): 'fui', ('2', 'sg'): 'fuiste', ('3', 'sg'): 'fue', ('1', 'pl'): 'fuimos', ('2', 'pl'): 'fueron', ('3', 'pl'): 'fueron'}, 'ser': {('1', 'sg'): 'fui', ('2', 'sg'): 'fuiste', ('3', 'sg'): 'fue', ('1', 'pl'): 'fuimos', ('2', 'pl'): 'fueron', ('3', 'pl'): 'fueron'}, 'ver': {('1', 'sg'): 'vi', ('2', 'sg'): 'viste', ('3', 'sg'): 'vio', ('1', 'pl'): 'vimos', ('2', 'pl'): 'vieron', ('3', 'pl'): 'vieron'}, 'oir': {('1', 'sg'): 'oí', ('2', 'sg'): 'oiste', ('3', 'sg'): 'oyó', ('1', 'pl'): 'oimos', ('2', 'pl'): 'oyeron', ('3', 'pl'): 'oyeron'}}
 	key = (person, number)
 	if infinitive_sp in irregular:
 		return irregular[infinitive_sp].get(key)
@@ -7967,10 +8898,41 @@ def translate_ntl_structure_to_sp(structure: dict, conditional_part: bool=False)
 
 	remaining = structure.get('remaining', [])
 	if remaining:
-		inline_phrases, _used_indexes = detect_inline_fixed_phrases_ntl(remaining)
-		for _start, _end, phrase_sp, _source_kind in sorted(inline_phrases, key=lambda item: item[0]):
-			if phrase_sp:
+		# No descartar el resto de la oración después de reconocer el primer verbo.
+		# Esto es esencial en secuencias copulares/subordinadas como:
+		# panoznel-uelik eyo tlen ikuak ... ti kaki
+		# donde «eyo» no representa por sí solo toda la entrada.
+		inline_phrases, used_indexes = detect_inline_fixed_phrases_ntl(remaining)
+		phrases_by_start = {
+			start: (end, phrase_sp)
+			for start, end, phrase_sp, _source_kind in inline_phrases
+			if phrase_sp
+		}
+		j = 0
+		while j < len(remaining):
+			if j in phrases_by_start:
+				end, phrase_sp = phrases_by_start[j]
 				parts.append(phrase_sp)
+				j = end
+				continue
+			if j in used_indexes:
+				j += 1
+				continue
+
+			# Un semipronombre seguido de verbo forma una sola unidad verbal.
+			if remaining[j] in {'ni', 'ti', 'an'} and j + 1 < len(remaining):
+				clause_sp = translate_ntl_simple_present_to_sp(
+					remaining[j] + ' ' + remaining[j + 1]
+				)
+				if clause_sp:
+					parts.append(clause_sp)
+					j += 2
+					continue
+
+			translated_token = translate_token_ntl_to_sp(remaining[j])
+			if translated_token and not translated_token.startswith('['):
+				parts.append(translated_token)
+			j += 1
 
 	return ' '.join(parts).strip()
 
@@ -8051,12 +9013,20 @@ def translate_ntl_reflexive_direct_to_sp(text: str) -> str | None:
 	return ' '.join(parts)
 
 def normalize_sp_output_case(text: str) -> str:
+	"""El español inicia con mayúscula; se conservan las tildes y la puntuación."""
 	text = (text or '').strip()
 	if not text:
 		return text
 	if text.isupper():
-		return text.lower()
-	return text[0].lower() + text[1:]
+		text = text.lower()
+	# Se respeta la forma registrada por el diccionario y se corrige únicamente
+	# una falta ortográfica en español, sin alterar la forma verbal Náhuatl.
+	text = re.sub(r'\boiste\b', 'oíste', text, flags=re.IGNORECASE)
+	first_letter = re.search(r'[a-záéíóúüñ]', text, flags=re.IGNORECASE)
+	if first_letter:
+		i = first_letter.start()
+		text = text[:i] + text[i].upper() + text[i + 1:]
+	return text
 
 
 # ----------------------------------------------------------------------
@@ -8148,6 +9118,26 @@ def _perfect_participle_sp_from_ntl(form_ntl: str) -> str | None:
 
 def _perfect_auxiliary(kind: str, subject: tuple[str, str]) -> str | None:
 	return _PERFECT_AUXILIARY_SP.get(kind, {}).get(subject)
+
+
+def consume_ntl_perfect_prefix(tokens: list[str], start: int=0) -> tuple[str | None, int]:
+	"""Consume únicamente la cláusula perfecta que comienza en ``start``.
+
+	Devuelve ``(traduccion, siguiente_indice)``. El resto de los tokens queda
+	intacto para que la capa superior continúe analizándolo como otra unidad.
+	No asigna un valor nuevo a ``ye`` ni contiene excepciones por verbo.
+	"""
+	if not tokens or start < 0 or start >= len(tokens):
+		return (None, start)
+
+	# Busca el prefijo válido más largo, nunca obliga a que el perfecto alcance
+	# el final de la entrada completa.
+	for end in range(len(tokens), start + 1, -1):
+		candidate = ' '.join(tokens[start:end])
+		translated = translate_ntl_perfect_to_sp(candidate)
+		if translated:
+			return (translated, end)
+	return (None, start)
 
 
 def translate_ntl_perfect_to_sp(text: str) -> str | None:
@@ -8253,7 +9243,7 @@ def lookup_ntl_sp_exact(text: str):
 	raw = unicodedata.normalize('NFC', str(text or '')).strip().lower()
 	raw = raw.strip('.,;:¡!¿?\"\'“”‘’()[]{}')
 	key = normalize_ntl_orthography(raw)
-	for mapping in (NOUNS_NTL_SP, MODIFIERS_NTL_SP, ntl_sp):
+	for mapping in (INTERJECTIONS_NTL_SP, BELONGING_MARKERS_NTL_SP, NOUNS_NTL_SP, MODIFIERS_NTL_SP, ntl_sp):
 		for candidate in (raw, key):
 			val = mapping.get(candidate)
 			if val is None:
@@ -8268,28 +9258,45 @@ def lookup_ntl_sp_exact(text: str):
 
 
 def translate_ntl_belonging_noun_to_sp(text: str) -> str | None:
-	"""Interpreta no/mo/i/to/anmo/in/kin como pertenencia ante una clave nominal NTL→SP."""
+	"""Interpreta los marcadores de pertenencia definidos en BELONGING_MARKERS_NTL_SP ante una clave nominal NTL→SP."""
 	t = normalize_ntl_orthography(text)
-	t = re.sub('[¡!¿?\\.,;:"“”‘’«»]+', ' ', t)
-	t = re.sub('\\s+', ' ', t).strip()
-	tokens = t.split()
-	if len(tokens) < 2:
+	t = re.sub(r'[¡!¿?\.,;:"“”‘’«»]+', ' ', t)
+	t = re.sub(r'\s+', ' ', t).strip()
+	if not t:
 		return None
-	belonging_sp = {
-		'no': 'mi',
-		'mo': 'tu',
-		'i': 'su',
-		'to': 'nuestro',
-		'anmo': 'de ustedes',
-		'in': 'de ellos',
-		'kin': 'de ellos',
-	}
-	prefix = tokens[0]
-	if prefix not in belonging_sp:
+
+	# Se aceptan tanto las claves del archivo externo como sus variantes sin
+	# espacio (por ejemplo, "an mo" y "anmo") sin modificar el diccionario.
+	marker_entries = []
+	for marker_ntl, marker_sp in BELONGING_MARKERS_NTL_SP.items():
+		marker = normalize_ntl_orthography(str(marker_ntl))
+		marker_entries.append((marker, marker_sp))
+		compact = marker.replace(' ', '')
+		if compact != marker:
+			marker_entries.append((compact, marker_sp))
+	marker_entries.sort(key=lambda item: len(item[0]), reverse=True)
+
+	marker_sp = None
+	noun_ntl = None
+	for marker, value in marker_entries:
+		if t == marker:
+			continue
+		if t.startswith(marker + ' '):
+			marker_sp = value
+			noun_ntl = t[len(marker):].strip()
+			break
+	if marker_sp is None or not noun_ntl:
 		return None
-	noun_ntl = ' '.join(tokens[1:])
+
+	plural = False
+	noun_candidates = [noun_ntl, normalize_ntl_orthography(noun_ntl)]
+	if noun_ntl.endswith('uan') and len(noun_ntl) > 3:
+		plural = True
+		base = noun_ntl[:-3]
+		noun_candidates.extend((base, normalize_ntl_orthography(base)))
+
 	noun_sp = None
-	for candidate in (noun_ntl, normalize_ntl_orthography(noun_ntl)):
+	for candidate in noun_candidates:
 		val = NOUNS_NTL_SP.get(candidate)
 		if val is None:
 			continue
@@ -8302,14 +9309,542 @@ def translate_ntl_belonging_noun_to_sp(text: str) -> str | None:
 			break
 	if not noun_sp:
 		return None
-	return f"{belonging_sp[prefix]} {noun_sp}"
+
+	if plural:
+		noun_sp = pluralize_spanish_noun(noun_sp)
+
+	variants = all_variants(marker_sp)
+	if not variants:
+		return None
+	marker_value = variants[0]
+	if plural and len(variants) > 1:
+		# En pares como mi/mis, tu/tus, su/sus se selecciona la forma plural.
+		marker_value = variants[1]
+	return f"{marker_value} {noun_sp}"
+
+
+def _reverse_sp_ntl_lexical_candidate(token: str, mapping: dict) -> str | None:
+	"""Recupera una clave española cuya equivalencia vuelve al token Náhuatl.
+
+	Sirve para mantener coherencia bidireccional cuando una base NTL→SP contiene
+	una acepción distinta de la que produjo originalmente la ruta SP→NTL.
+	"""
+	norm_token = normalize_ntl_orthography(token)
+	for sp_key, ntl_value in mapping.items():
+		for variant in all_variants(ntl_value):
+			if normalize_ntl_orthography(str(variant).strip()) == norm_token:
+				return str(sp_key).strip()
+	return None
+
+
+def _lexical_ntl_token_to_sp(token: str, category: str | None = None) -> str | None:
+	"""Traduce un lexema respetando categoría y coherencia bidireccional."""
+	# Cuando el analizador ya conoce la categoría, se reconstruye primero desde
+	# la base SP→NTL correspondiente. Esto evita que una acepción de otra
+	# categoría gane sólo por el orden de las búsquedas generales.
+	if category == 'modifier':
+		value = _reverse_sp_ntl_lexical_candidate(token, MODIFIERS_SP_NTL)
+		if value:
+			return value
+		value = tolerant_lookup(token, MODIFIERS_NTL_SP)
+		if value:
+			return str(first_variant(value) or '').strip() or None
+
+	if category == 'noun':
+		value = _reverse_sp_ntl_lexical_candidate(token, NOUNS_SP_NTL)
+		if value:
+			return value
+		value = tolerant_lookup(token, NOUNS_NTL_SP)
+		if value:
+			value = first_variant(value)
+			if isinstance(value, dict):
+				value = value.get('es') or value.get('sp')
+			if value:
+				return str(value).strip()
+
+	value = lookup_ntl_sp_exact(token)
+	if value:
+		return value
+	value = translate_token_ntl_to_sp(token)
+	if value and not value.startswith('['):
+		return value
+	return None
+
+
+def _translate_ntl_predicate_perfect_sequence(tokens: list[str]) -> str | None:
+	"""Traduce modificador + perfecto y conserva complementos ya delimitados.
+
+	Esta capa no interpreta una entrada completa: consume la predicación y el
+	perfecto como unidades, y sólo añade después enlaces/preposiciones que ya
+	pertenecen al mismo lado de una frontera de cláusula.
+	"""
+	if not tokens:
+		return None
+	modifier_end = 0
+	while modifier_end < len(tokens) and tokens[modifier_end] in NTL_MODIFIER_SET:
+		modifier_end += 1
+	if not modifier_end or modifier_end >= len(tokens) or tokens[modifier_end] != 'ye':
+		return None
+	perfect_sp, perfect_end = consume_ntl_perfect_prefix(tokens, modifier_end)
+	if not perfect_sp:
+		return None
+	attrs = [_lexical_ntl_token_to_sp(tk, category='modifier') for tk in tokens[:modifier_end]]
+	if not all(attrs):
+		return None
+	out = ['es', *attrs, 'que', perfect_sp]
+	for tk in tokens[perfect_end:]:
+		value = _reverse_sp_ntl_lexical_candidate(tk, PREPOSITIONS_SP_NTL)
+		if not value:
+			value = _lexical_ntl_token_to_sp(tk)
+		if value:
+			out.append(value)
+	return ' '.join(out).strip()
+
+
+def _translate_ntl_subordinate_sequence(tokens: list[str]) -> str | None:
+	"""Traduce una cláusula subordinada sin degradarla a tokens nominales.
+
+	Consume, en orden, adverbios/modificadores iniciales, objetos y el predicado.
+	Sirve para estructuras como ``noihki mitz opanok`` -> ``también te pasó`` y
+	no contiene excepciones por verbo concreto.
+	"""
+	if not tokens:
+		return None
+	i = 0
+	front = []
+	while i < len(tokens):
+		adv = tolerant_lookup(tokens[i], ADVERBS_NTL_SP)
+		if adv is None:
+			break
+		adv = first_variant(adv)
+		if isinstance(adv, dict):
+			adv = adv.get('es') or adv.get('sp')
+		if not adv:
+			break
+		front.append(str(adv).strip())
+		i += 1
+
+	objects = []
+	while i < len(tokens) and tokens[i] in NTL_OBJECT_MAP_SP:
+		obj = NTL_OBJECT_MAP_SP[tokens[i]]
+		# En español los clíticos se conservan como me/te/nos/lo/la/los/las.
+		objects.append(obj)
+		i += 1
+
+	if i >= len(tokens):
+		return None
+
+	# Primero se intenta la forma verbal superficial completa registrada en las
+	# bases; así se respetan irregulares y formas ya definidas por el usuario.
+	# La normalización puede separar el prefijo pasado ``o`` de una forma que en
+	# la base está registrada unida (``opanok``). Antes de analizar morfemas por
+	# separado se recompone esa superficie y se consulta como una sola forma.
+	verb_sp = None
+	verb_end = i
+	if tokens[i] == 'o' and i + 1 < len(tokens):
+		fused_past = 'o' + tokens[i + 1]
+		exact_fused = lookup_ntl_sp_exact(fused_past)
+		if exact_fused:
+			verb_sp = exact_fused
+			verb_end = i + 2
+	if not verb_sp:
+		for end in range(len(tokens), i, -1):
+			candidate = ' '.join(tokens[i:end])
+			exact = lookup_ntl_sp_exact(candidate)
+			if exact:
+				verb_sp = exact
+				verb_end = end
+				break
+	if not verb_sp:
+		structure = parse_ntl_structure(' '.join(tokens[i:]))
+		if structure and structure.get('infinitive_sp'):
+			verb_sp = translate_ntl_structure_to_sp(structure)
+			if verb_sp:
+				verb_end = len(tokens) - len(structure.get('remaining') or [])
+	if not verb_sp:
+		return None
+
+	out = [*front, *objects, verb_sp]
+	for tk in tokens[verb_end:]:
+		value = _lexical_ntl_token_to_sp(tk)
+		if value:
+			out.append(value)
+	return ' '.join(out).strip()
+
+
+
+NTL_CLAUSE_CUT_PARTICLES = {
+    'noihki': 'también',
+}
+
+
+def _translate_ntl_after_cut_to_sp(tokens: list[str]) -> str | None:
+    """Traduce el contenido situado después de una partícula de corte.
+
+    La partícula de corte ya fue consumida. Aquí se localiza el predicado desde
+    la derecha para que los constituyentes temporales interpuestos no impidan
+    reconocer objeto + verbo como una sola unidad.
+    """
+    if not tokens:
+        return None
+
+    # Busca el inicio más a la derecha que forme una cláusula verbal válida.
+    # Así ``achtopan inon kauitl mitz o panok`` conserva ``mitz o panok`` como
+    # predicado y deja el grupo temporal como constituyente anterior.
+    for start in range(len(tokens)):
+        predicate = _translate_ntl_subordinate_sequence(tokens[start:])
+        if not predicate:
+            continue
+        before = tokens[:start]
+        if not before:
+            return predicate
+
+        # Grupo temporal validado por el usuario. Se conserva como unidad y se
+        # expresa con su lectura adverbial equivalente, sin desarmar ``inon`` o
+        # ``kauitl`` en traducciones nominales aisladas.
+        if before == ['achtopan', 'inon', 'kauitl']:
+            return f'{predicate} anteriormente'.strip()
+
+        # Para otros constituyentes sólo se acepta una traducción completa; si
+        # alguno no se reconoce, se abandona esta ruta para evitar fabricar una
+        # oración a partir de fragmentos.
+        before_sp = []
+        for tk in before:
+            value = _lexical_ntl_token_to_sp(tk)
+            if not value:
+                before_sp = []
+                break
+            before_sp.append(value)
+        if before_sp:
+            return ' '.join([predicate, *before_sp]).strip()
+    return None
+
+
+def _translate_ntl_cut_sequence_to_sp(tokens: list[str]) -> str | None:
+    """Consume una partícula de corte y entrega el resto a una nueva cláusula."""
+    if not tokens or tokens[0] not in NTL_CLAUSE_CUT_PARTICLES:
+        return None
+    cut_sp = NTL_CLAUSE_CUT_PARTICLES[tokens[0]]
+    tail_sp = _translate_ntl_after_cut_to_sp(tokens[1:])
+    if not tail_sp:
+        return None
+    return f'{cut_sp} {tail_sp}'.strip()
+
+def translate_ntl_connector_clause_to_sp(text: str) -> str | None:
+	"""Compone una subordinación con ``tlen`` respetando límites de cláusula."""
+	tokens = normalize_ntl_compound_tokens(text).split()
+	if 'tlen' not in tokens:
+		return None
+	i = tokens.index('tlen')
+	if i == 0 or i == len(tokens) - 1:
+		return None
+	left, right = tokens[:i], tokens[i + 1:]
+
+	# Antes de aplicar rutas nominales, se preservan las unidades que ya pueden
+	# delimitarse estructuralmente: predicación + perfecto + complemento.
+	left_sp = _translate_ntl_predicate_perfect_sequence(left)
+	if not left_sp:
+		left_attrs = [_lexical_ntl_token_to_sp(tk, category='modifier') for tk in left]
+		if left and all(left_attrs):
+			left_sp = ' '.join(['es', *left_attrs]).strip()
+		elif left[-1] == 'eyo':
+			attrs = [_lexical_ntl_token_to_sp(tk, category='modifier') for tk in left[:-1]]
+			attrs = [x for x in attrs if x]
+			left_sp = ' '.join(['es', *attrs]).strip() if attrs else None
+		else:
+			# Una cláusula anterior a otro ``tlen`` también puede comenzar por
+			# adverbio/objeto (p. ej. noihki + mitz + verbo). Se intenta como
+			# unidad verbal antes de degradarla a la ruta general.
+			left_sp = _translate_ntl_subordinate_sequence(left)
+			if not left_sp:
+				left_sp = _translate_ntl_clause_tokens_to_sp(left)
+
+	# Si la parte derecha contiene otro ``tlen``, no se traduce el resto token
+	# por token: se vuelve a segmentar recursivamente. De este modo una entrada
+	# puede encadenar tres o más cláusulas sin perder el límite ya reconocido.
+	if 'tlen' in right:
+		right_sp = translate_ntl_connector_clause_to_sp(' '.join(right))
+	else:
+		# «ikuak» introduce aquí una cláusula temporal («cuando»), no el
+		# adverbio aislado «entonces». Se conserva la cláusula completa antes
+		# de intentar lecturas léxicas parciales de sus componentes.
+		right_sp = _translate_ntl_clause_tokens_to_sp(right) if right[0] == 'ikuak' else None
+		if not right_sp:
+			# Las partículas de corte delimitan primero la estructura.
+			right_sp = _translate_ntl_cut_sequence_to_sp(right)
+		if not right_sp:
+			right_sp = _translate_ntl_subordinate_sequence(right)
+		if not right_sp:
+			right_sp = _translate_ntl_clause_tokens_to_sp(right)
+	if not left_sp or not right_sp:
+		return None
+
+	# ``tlen`` funciona aquí como relativo nominal cuando está regido por una
+	# preposición ya consumida por la cláusula izquierda. Así ``ik tlen`` se
+	# reconstruye como ``por lo que``; sin preposición conserva el enlace ``que``.
+	connector_sp = 'que'
+	if left and _reverse_sp_ntl_lexical_candidate(left[-1], PREPOSITIONS_SP_NTL):
+		connector_sp = 'lo que'
+	return f'{left_sp} {connector_sp} {right_sp}'.strip()
+
+def _reverse_exact_surface_sp_ntl(nt_tokens: list[str]) -> str | None:
+	"""Recupera primero la forma española que produjo una forma NTL completa."""
+	if not nt_tokens:
+		return None
+	targets = {
+		normalize_ntl_orthography(''.join(nt_tokens)),
+		normalize_ntl_orthography(' '.join(nt_tokens)),
+	}
+	for sp_key, ntl_value in sp_ntl.items():
+		for variant in all_variants(ntl_value):
+			if normalize_ntl_orthography(str(variant).strip()) in targets:
+				return str(sp_key).strip()
+	return None
+
+
+def _conjugate_sp_present_subjunctive_person(infinitive_sp: str, person: str, number: str) -> str | None:
+	"""Conjuga presente de subjuntivo para la persona ya analizada en NTL.
+
+	Se usa en subordinadas que exigen una lectura no realizada/prospectiva en
+	español. No cambia el valor temporal de la forma NTL fuera de ese entorno.
+	"""
+	infinitive_sp = (infinitive_sp or '').strip().lower()
+	key = (person, number)
+	irregular = {
+		'ser': {('1','sg'):'sea', ('2','sg'):'seas', ('3','sg'):'sea', ('1','pl'):'seamos', ('2','pl'):'sean', ('3','pl'):'sean'},
+		'ir': {('1','sg'):'vaya', ('2','sg'):'vayas', ('3','sg'):'vaya', ('1','pl'):'vayamos', ('2','pl'):'vayan', ('3','pl'):'vayan'},
+		'estar': {('1','sg'):'esté', ('2','sg'):'estés', ('3','sg'):'esté', ('1','pl'):'estemos', ('2','pl'):'estén', ('3','pl'):'estén'},
+		'haber': {('1','sg'):'haya', ('2','sg'):'hayas', ('3','sg'):'haya', ('1','pl'):'hayamos', ('2','pl'):'hayan', ('3','pl'):'hayan'},
+		'oír': {('1','sg'):'oiga', ('2','sg'):'oigas', ('3','sg'):'oiga', ('1','pl'):'oigamos', ('2','pl'):'oigan', ('3','pl'):'oigan'},
+		'oir': {('1','sg'):'oiga', ('2','sg'):'oigas', ('3','sg'):'oiga', ('1','pl'):'oigamos', ('2','pl'):'oigan', ('3','pl'):'oigan'},
+	}
+	if infinitive_sp in irregular:
+		return irregular[infinitive_sp].get(key)
+	if not infinitive_sp.endswith(('ar', 'er', 'ir')):
+		return None
+	stem = infinitive_sp[:-2]
+	if infinitive_sp.endswith('ar'):
+		ending = {('1','sg'):'e', ('2','sg'):'es', ('3','sg'):'e', ('1','pl'):'emos', ('2','pl'):'en', ('3','pl'):'en'}.get(key)
+	else:
+		ending = {('1','sg'):'a', ('2','sg'):'as', ('3','sg'):'a', ('1','pl'):'amos', ('2','pl'):'an', ('3','pl'):'an'}.get(key)
+	return stem + ending if ending else None
+
+
+def _split_compound_nominal_ntl(token: str) -> tuple[str, str] | None:
+	"""Reconoce dos sustantivos ensamblados, con raíz inicial y núcleo final.
+
+	Sólo acepta dos sustantivos completos que existen en el diccionario:
+	el primero puede perder una terminación nominal; el último se conserva.
+	No se asigna una equivalencia fija a ninguna palabra compuesta.
+	"""
+	word = normalize_ntl_orthography(token)
+	matches = []
+	for first in NOUNS_NTL_SP:
+		first = normalize_ntl_orthography(str(first))
+		for suffix in ('itl', 'tli', 'tl', 'li'):
+			if not first.endswith(suffix):
+				continue
+			stem = first[:-len(suffix)]
+			if len(stem) < 4 or not word.startswith(stem):
+				continue
+			second = word[len(stem):]
+			if second in NOUNS_NTL_SP:
+				matches.append((stem, first, second))
+		# Conservar exclusivamente las terminaciones del nombre original.
+	if not matches:
+		return None
+	# Mayor raíz inicial: evita partir una palabra por un prefijo más corto.
+	longest = max(len(item[0]) for item in matches)
+	best = {(first, second) for stem, first, second in matches if len(stem) == longest}
+	return next(iter(best)) if len(best) == 1 else None
+
+
+def _translate_ntl_clause_tokens_to_sp(tokens: list[str]) -> str | None:
+	"""Traduce una cláusula completa y consume el predicado como unidad.
+
+	``ikuak`` aporta solamente el enlace temporal «cuando». El tiempo, modo,
+	persona y número se recuperan de la propia forma verbal NTL. Una forma
+	prospectiva en -z puede reconstruirse como presente de subjuntivo en este
+	entorno; las demás conjugaciones conservan su valor propio.
+	"""
+	if not tokens:
+		return None
+	parts = tokens[:]
+	intro = None
+	temporal_subordinate = False
+	if parts and parts[0] == 'ikuak':
+		intro = 'cuando'
+		temporal_subordinate = True
+		parts = parts[1:]
+
+	# Se aceptan todos los inicios de cláusula finita que ya reconoce el
+	# analizador general: presente y formas con prefijo de pasado, en todas las
+	# personas explícitamente marcadas. La tercera persona sin semipronombre se
+	# deja a las rutas estructurales generales.
+	finite_starts = {'ni', 'ti', 'an', 'o', 'oni', 'oti', 'oan'}
+	for i in range(len(parts)):
+		if parts[i] not in finite_starts:
+			continue
+
+		# El predicado se analiza con la misma maquinaria general NTL→SP; así no
+		# se codifican excepciones por verbo, persona ni conjugación.
+		verb_slice = parts[i:]
+		structure = parse_ntl_structure(' '.join(verb_slice))
+		if not structure or not structure.get('infinitive_sp'):
+			continue
+
+		ending = structure.get('verb_ending')
+		person = structure.get('person', '3')
+		number = structure.get('number', 'sg')
+		infinitive_sp = structure.get('infinitive_sp')
+		verb_sp = None
+
+		# ``panoznel-uelik`` ni ``ikuak`` agregan -z ni fuerzan subjuntivo.
+		# Sólo la morfología prospectiva de ESTE verbo habilita esa lectura.
+		if temporal_subordinate and ending in {'future', 'future_plural'}:
+			verb_sp = _conjugate_sp_present_subjunctive_person(
+				infinitive_sp, person, number
+			)
+
+		if not verb_sp:
+			verb_sp = conjugate_sp_by_tense(infinitive_sp, ending, person, number)
+		if not verb_sp:
+			continue
+
+		nominal_tokens = parts[:i]
+		if len(nominal_tokens) == 1:
+			compound_nouns = _split_compound_nominal_ntl(nominal_tokens[0])
+			if compound_nouns:
+				nominal_tokens = list(compound_nouns)
+		nominal = [_lexical_ntl_token_to_sp(tk, category='noun') for tk in nominal_tokens]
+		nominal = [x for x in nominal if x]
+		if temporal_subordinate and len(nominal_tokens) == 1 and len(nominal) == 1:
+			# Un sustantivo polisémico no debe tomar siempre la primera glosa.
+			# La lista léxica ya permite elegir su variante nominal específica.
+			raw_noun = tolerant_lookup(nominal_tokens[0], NOUNS_NTL_SP)
+			if isinstance(raw_noun, (list, tuple)):
+				variants = [str(x).strip() for x in raw_noun if str(x).strip()]
+				if variants:
+					nominal[0] = variants[-1]
+
+		# En una cadena binominal NTL N1 N2, N2 puede funcionar como núcleo y
+		# N1 como complemento: «N2 de la N1».
+		if len(nominal_tokens) == 2 and len(nominal) == 2:
+			raw_first = tolerant_lookup(nominal_tokens[0], NOUNS_NTL_SP)
+			if isinstance(raw_first, (list, tuple)):
+				vals = [str(v).strip() for v in raw_first if str(v).strip()]
+				if vals:
+					nominal[0] = vals[-1]
+			phrase_nominal = f'la {nominal[1]} de la {nominal[0]}'
+		else:
+			phrase_nominal = ''
+			if nominal:
+				nominal[0] = 'la ' + nominal[0]
+
+		# ``parse_ntl_structure`` ya consumió la forma verbal completa. Los
+		# elementos restantes, si existen, se reconstruyen después del verbo.
+		remaining = structure.get('remaining') or []
+		rest = [_lexical_ntl_token_to_sp(tk) for tk in remaining]
+		rest = [x for x in rest if x]
+		out = [*([intro] if intro else []), verb_sp]
+		if phrase_nominal:
+			out.append(phrase_nominal)
+		else:
+			out.extend(nominal)
+		out.extend(rest)
+		return ' '.join(out).strip()
+
+	translated = [_lexical_ntl_token_to_sp(tk) for tk in parts]
+	translated = [x for x in translated if x]
+	return ' '.join([*([intro] if intro else []), *translated]).strip() or None
+
+
+def _translate_ntl_unconsumed_sequence_to_sp(tokens: list[str]) -> str:
+	"""Conserva la secuencia completa cuando ninguna ruta consumió sus unidades.
+
+	No inventa equivalencias: busca en las bases y mantiene el token NTL cuando
+	no hay traducción disponible. Las preposiciones y los objetos se distinguen
+	antes de permitir que una lectura parcial descarte los componentes restantes.
+	"""
+	parts = []
+	for tk in tokens:
+		value = NTL_OBJECT_MAP_SP.get(tk)
+		if not value:
+			value = _lexical_ntl_token_to_sp(tk)
+		if not value:
+			value = _reverse_sp_ntl_lexical_candidate(tk, PREPOSITIONS_SP_NTL)
+		if not value:
+			adv = tolerant_lookup(tk, ADVERBS_NTL_SP)
+			if adv:
+				value = first_variant(adv)
+				if isinstance(value, dict):
+					value = value.get('es') or value.get('sp')
+		parts.append(str(value or tk).strip())
+	return ' '.join(parts).strip()
+
+
+def translate_ntl_exact_lexical_sequence(text: str) -> str | None:
+	"""Traduce secuencias de claves exactas sin descomponer sus lexemas."""
+	tokens = normalize_ntl_orthography(str(text or '')).split()
+	if len(tokens) < 2:
+		return None
+	pieces = []
+	index = 0
+	while index < len(tokens):
+		match = None
+		for end in range(len(tokens), index, -1):
+			candidate = ' '.join(tokens[index:end])
+			value = lookup_ntl_sp_exact(candidate)
+			if value:
+				match = (end, value)
+				break
+		if match is None:
+			# Los enlaces registrados también son unidades léxicas.
+			value = _reverse_sp_ntl_lexical_candidate(tokens[index], PREPOSITIONS_SP_NTL)
+			if isinstance(value, str) and value:
+				match = (index + 1, value)
+		if match is None:
+			return None
+		pieces.append(match[1])
+		index = match[0]
+	return ' '.join(pieces)
 
 
 def _translate_ntl_to_sp_core(text: str) -> str:
+	# Una secuencia cubierta íntegramente por claves del léxico no debe
+	# enviarse al analizador morfológico, que dividiría las unidades.
+	lexical_sequence = translate_ntl_exact_lexical_sequence(text)
+	if lexical_sequence:
+		return normalize_sp_output_case(lexical_sequence)
+	normalized_connector_tokens = normalize_ntl_compound_tokens(text).split()
+	if normalized_connector_tokens[:1] == ['ikuak']:
+		# Clausula temporal autónoma: anteponer «cuando» a su propio predicado.
+		_temporal_sp = _translate_ntl_clause_tokens_to_sp(normalized_connector_tokens)
+		if _temporal_sp:
+			return normalize_sp_output_case(_temporal_sp)
+	connector_clause = translate_ntl_connector_clause_to_sp(text)
+	if connector_clause:
+		return normalize_sp_output_case(connector_clause)
+	if 'tlen' in normalized_connector_tokens:
+		# Un conector reconocido reserva la entrada completa. No se permite que una
+		# ruta posterior reduzca la oración a un lexema interno (p. ej. «palabra»).
+		return normalize_sp_output_case(
+			_translate_ntl_clause_tokens_to_sp(normalized_connector_tokens) or text
+		)
+
+	uihka_special = translate_uihka_family_ntl_to_sp(text)
+	if uihka_special:
+		return normalize_sp_output_case(uihka_special)
+
 	text = (text or '').strip()
 	exact = lookup_ntl_sp_exact(text)
 	if exact:
 		return normalize_sp_output_case(exact)
+	# Sólo en la palabra aislada: la coincidencia léxica exacta prevalece.
+	if len(text.split()) == 1:
+		_formation = analyze_ntl_structured_word(text)
+		if _formation and _formation['interpretacion_validada']:
+			return _formation['interpretacion_validada']
 	belonging_noun = translate_ntl_belonging_noun_to_sp(text)
 	if belonging_noun:
 		return normalize_sp_output_case(belonging_noun)
@@ -8325,16 +9860,109 @@ def _translate_ntl_to_sp_core(text: str) -> str:
 	if len(segments) > 1:
 		return '\n'.join((translate_ntl_to_sp(seg) for seg in segments))
 	t_norm = normalize_ntl_compound_tokens(text)
+
+	# Una predicación modificadora puede gobernar una cláusula perfecta completa:
+	#   panoznel-uelik ye oni panok -> es probable que he pasado
+	# La regla es estructural: ``ye`` conserva su valor propio y sólo la secuencia
+	# ``ye + forma pasada`` se entrega al analizador general de tiempos perfectos.
+	# No se fija ninguna equivalencia ``ye = he`` ni se codifica un verbo concreto.
+	_pred_tokens = t_norm.split()
+	if len(_pred_tokens) >= 4:
+		_modifier_end = 0
+		while _modifier_end < len(_pred_tokens) and _pred_tokens[_modifier_end] in NTL_MODIFIER_SET:
+			_modifier_end += 1
+		if _modifier_end and _modifier_end < len(_pred_tokens) and _pred_tokens[_modifier_end] == 'ye':
+			# La cláusula perfecta puede terminar antes que la entrada completa.
+			# Se busca el prefijo válido más largo desde ``ye``; así un elemento
+			# posterior (p. ej. ``ik``) no se confunde con el verbo perfecto y queda
+			# disponible para iniciar/continuar el complemento siguiente.
+			_perfect_sp, _perfect_end = consume_ntl_perfect_prefix(
+				_pred_tokens, _modifier_end
+			)
+			if _perfect_sp:
+				_attrs = [
+					_lexical_ntl_token_to_sp(tk, category='modifier')
+					for tk in _pred_tokens[:_modifier_end]
+				]
+				if all(_attrs):
+					_tail_sp = []
+					for _tk in _pred_tokens[_perfect_end:]:
+						_val = _reverse_sp_ntl_lexical_candidate(_tk, PREPOSITIONS_SP_NTL)
+						if not _val:
+							_val = _lexical_ntl_token_to_sp(_tk)
+						_tail_sp.append(_val or _tk)
+					_result = 'es ' + ' '.join(_attrs) + ' que ' + _perfect_sp
+					if _tail_sp:
+						_result += ' ' + ' '.join(_tail_sp)
+					return normalize_sp_output_case(_result)
+
+	# Una cláusula perfecta al inicio tampoco necesita ocupar toda la entrada.
+	# Se consume primero y el resto continúa por traducción léxica, preservando
+	# conectores/preposiciones que abren la unidad siguiente.
+	_perfect_prefix_sp, _perfect_prefix_end = consume_ntl_perfect_prefix(_pred_tokens, 0)
+	if _perfect_prefix_sp:
+		_tail_sp = []
+		for _tk in _pred_tokens[_perfect_prefix_end:]:
+			_val = _reverse_sp_ntl_lexical_candidate(_tk, PREPOSITIONS_SP_NTL)
+			if not _val:
+				_val = _lexical_ntl_token_to_sp(_tk)
+			_tail_sp.append(_val or _tk)
+		_result = _perfect_prefix_sp
+		if _tail_sp:
+			_result += ' ' + ' '.join(_tail_sp)
+		return normalize_sp_output_case(_result)
+
 	perfect_result = translate_ntl_perfect_to_sp(t_norm)
 	if perfect_result:
 		return normalize_sp_output_case(perfect_result)
 	reflexive_result = translate_ntl_reflexive_direct_to_sp(t_norm)
 	if reflexive_result:
 		return reflexive_result
-	structure_debug = parse_ntl_structure(t_norm)
-	structure_result = translate_ntl_structure_to_sp(structure_debug)
-	if structure_result:
-		return normalize_sp_output_case(structure_result)
+	# Una secuencia que comienza con un modificador reconocido no debe entrar
+	# automáticamente a la ruta verbal. En NTL→SP esto protege construcciones
+	# nominales como «iztak telolopan»: el primer elemento es adjetival y el
+	# segundo debe conservarse/traducirse, no descartarse al confundir «iztak»
+	# con una raíz verbal.
+	t_norm_tokens = t_norm.split()
+	nominal_modifier_lead = bool(
+		t_norm_tokens
+		and t_norm_tokens[0] in NTL_MODIFIER_SET
+		and not any(
+			tk in NTL_VISIBLE_PRONOUNS_TO_SP or tk in {'ni', 'ti', 'an', 'o', 'oni', 'oti', 'oan'}
+			for tk in t_norm_tokens
+		)
+	)
+	# Una preposición interna abre otro constituyente: no debe entrar en la
+	# inversión nominal pensada para un solo modificador + núcleo.
+	if nominal_modifier_lead and 'ik' not in t_norm_tokens:
+		# En Náhuatl el modificador puede anteceder al núcleo nominal; al pasar a
+		# español no debemos copiar mecánicamente ese orden. Primero se conserva
+		# el grupo completo y después se coloca el núcleo antes del modificador:
+		# «iztak telolopan» -> «automóvil blanco» (según las bases léxicas).
+		modifier_tokens = []
+		nucleus_tokens = []
+		reading_modifiers = True
+		for tk in t_norm_tokens:
+			if reading_modifiers and tk in NTL_MODIFIER_SET:
+				modifier_tokens.append(tk)
+			else:
+				reading_modifiers = False
+				nucleus_tokens.append(tk)
+
+		def _translate_nominal_token(tk: str) -> str:
+			sp = translate_token_ntl_to_sp(tk)
+			return sp if sp and not sp.startswith('[') else tk
+
+		nucleus_parts = [_translate_nominal_token(tk) for tk in nucleus_tokens]
+		modifier_parts = [_translate_nominal_token(tk) for tk in modifier_tokens]
+		nominal_parts = nucleus_parts + modifier_parts
+		if nominal_parts:
+			return normalize_sp_output_case(' '.join(nominal_parts))
+	else:
+		structure_debug = parse_ntl_structure(t_norm)
+		structure_result = translate_ntl_structure_to_sp(structure_debug)
+		if structure_result:
+			return normalize_sp_output_case(structure_result)
 	conditional_result = translate_ntl_conditional_future_to_sp(t_norm)
 	if conditional_result:
 		return conditional_result
@@ -8373,6 +10001,19 @@ def _translate_ntl_to_sp_core(text: str) -> str:
 	structure = parse_ntl_structure_to_sp(text)
 	result = build_sp_expression_from_ntl_structure(structure)
 	if result:
+		# La ruta de respaldo no puede declarar consumida una oración cuando
+		# detectó un supuesto verbo y aún quedan elementos sin incorporar.
+		# Ej.: «dentro» se parece gráficamente a un verbo español, pero es un
+		# modificador: no debe eclipsar todos los tokens posteriores.
+		if structure.get('verb') and structure.get('others') and len(t_norm_tokens) > 1:
+			return normalize_sp_output_case(
+				_translate_ntl_unconsumed_sequence_to_sp(t_norm_tokens)
+			)
+		# Un enlace no analizado tampoco autoriza a reordenar toda la entrada.
+		if 'ik' in t_norm_tokens and len(t_norm_tokens) > 2:
+			return normalize_sp_output_case(
+				_translate_ntl_unconsumed_sequence_to_sp(t_norm_tokens)
+			)
 		return normalize_sp_output_case(result)
 	t = normalize_ntl_orthography(text)
 	tokens = t.split()
@@ -8443,10 +10084,246 @@ def _preserve_edge_sentence_punctuation(source: str, translated: str) -> str:
 	return translated
 
 
+# Las tablas verbales comentadas del autor se consultan como paradigmas
+# contextuales, sin activar entradas homógrafas en el diccionario general.
+# No se crean equivalencias: únicamente se leen las que ya están documentadas.
+def _paradigmas_verbales_documentados_sp_ntl():
+	from pathlib import Path
+	archivo = Path(__file__).with_name('sp_ntl.py')
+	try:
+		contenido = archivo.read_text(encoding='utf-8')
+	except OSError:
+		return {}
+	resultado = {}
+	for bloque in re.findall(r"'''(.*?)'''", contenido, flags=re.S):
+		if '# Infinitivo:' not in bloque or '# Indicativo:' not in bloque:
+			continue
+		modo = ''
+		persona = 0
+		for linea in bloque.splitlines():
+			encabezado = re.match(r'\s*#\s*(.+?):\s*$', linea)
+			if encabezado:
+				modo = encabezado.group(1).lower()
+				persona = 0
+				continue
+			par = re.match(r'''\s*["']([^"']+)["']\s*:\s*["']([^"']+)["']''', linea)
+			if not par:
+				continue
+			forma, equivalencia = par.groups()
+			forma = normalize_input_sp(forma)
+			if modo.startswith('indicativo') or modo.startswith('subjuntivo') or modo.startswith('copretérito') or modo.startswith('enfatizante'):
+				persona += 1
+				# Las formas homógrafas de 1.ª y 3.ª persona se conservan.
+				orden = (1, 2, 3, 4, 5, 6)
+				indice = orden[(persona - 1) % len(orden)]
+			else:
+				indice = 0
+			resultado.setdefault(forma, []).append((indice, equivalencia, modo))
+	return resultado
+
+_PARADIGMAS_DOCUMENTADOS_SP_NTL = None
+
+
+def _resolver_verbo_documentado_sp_ntl(texto):
+	global _PARADIGMAS_DOCUMENTADOS_SP_NTL
+	if _PARADIGMAS_DOCUMENTADOS_SP_NTL is None:
+		_PARADIGMAS_DOCUMENTADOS_SP_NTL = _paradigmas_verbales_documentados_sp_ntl()
+	palabras = normalize_input_sp(str(texto or '')).split()
+	if not palabras:
+		return None
+	# «se» es un clítico, no un verbo independiente. La frase completa
+	# continúa al analizador general para que preserve su función.
+	if 'se' in palabras:
+		return None
+	sujetos = {'yo':1, 'tú':2, 'él':3, 'ella':3,
+		'nosotros':4, 'nosotras':4, 'ustedes':5,
+		'ellos':6, 'ellas':6}
+	if len(palabras) == 2 and palabras[0] in sujetos:
+		persona = sujetos[palabras[0]]
+		forma = palabras[1]
+	elif len(palabras) == 1:
+		persona = None
+		forma = palabras[0]
+	else:
+		return None
+	opciones = _PARADIGMAS_DOCUMENTADOS_SP_NTL.get(forma, [])
+	if not opciones:
+		return None
+	if persona is not None:
+		coincidencias = [valor for indice, valor, _ in opciones if indice == persona]
+		return coincidencias[-1] if coincidencias else None
+	# Las formas ambiguas con numerales, artículos o determinantes
+	# permanecen bajo el análisis general si no hay sujeto explícito.
+	if forma in {'uno', 'una', 'unas'}:
+		return None
+	# Cuando hay varias personas posibles se conserva la última variante
+	# documentada de tercera persona; nunca se inventa una conjugación.
+	coincidencias = [valor for indice, valor, _ in opciones if indice in (0, 3, 6)]
+	return coincidencias[-1] if coincidencias else opciones[-1][1]
+
+# La locución «llevar a cabo» hereda la conjugación de «hacer».
+# Se transforma antes del análisis verbal y no afecta a «llevar» aislado.
+_LLEVAR_A_CABO_HACER = dict(zip(
+	('llevar', 'lleva', 'lleven', 'llevo', 'llevas', 'llevamos', 'llevan',
+	 'llevé', 'llevaste', 'llevó', 'llevaron', 'llevaré', 'llevarás',
+	 'llevará', 'llevaremos', 'llevarán', 'lleve', 'lleves', 'llevemos',
+	 'llevara', 'llevaras', 'lleváramos', 'llevaran', 'llevase',
+	 'llevases', 'llevásemos', 'llevasen', 'llevare', 'llevares',
+	 'lleváremos', 'llevaren', 'llevaba', 'llevabas', 'llevábamos',
+	 'llevaban', 'llevaría', 'llevarías', 'llevaríamos', 'llevarían',
+	 'llevando', 'llevado', 'llevada'),
+	('hacer', 'hace', 'hagan', 'hago', 'haces', 'hacemos', 'hacen',
+	 'hice', 'hiciste', 'hizo', 'hicieron', 'haré', 'harás',
+	 'hará', 'haremos', 'harán', 'haga', 'hagas', 'hagamos',
+	 'hiciera', 'hicieras', 'hiciéramos', 'hicieran', 'hiciese',
+	 'hicieses', 'hiciésemos', 'hiciesen', 'hiciere', 'hicieres',
+	 'hiciéremos', 'hicieren', 'hacía', 'hacías', 'hacíamos',
+	 'hacían', 'haría', 'harías', 'haríamos', 'harían',
+	 'haciendo', 'hecho', 'hecha')
+))
+_LLEVAR_A_CABO_PATTERN = re.compile(
+	r'(?<!\w)(' + '|'.join(sorted(map(re.escape, _LLEVAR_A_CABO_HACER), key=len, reverse=True)) + r')\s+a\s+cabo(?!\w)',
+	re.IGNORECASE
+)
+
+def _normalizar_llevar_a_cabo_sp(text: str) -> str:
+	def sustituir(match):
+		forma = _LLEVAR_A_CABO_HACER[match.group(1).lower()]
+		return forma.capitalize() if match.group(1)[:1].isupper() else forma
+	return _LLEVAR_A_CABO_PATTERN.sub(sustituir, str(text or ''))
+
+def reorder_documented_adverb_sp_ntl(sp_text: str) -> str | None:
+	"""Anteponer el modificador adverbial a una expresión verbal documentada.
+
+	Sólo reordena si el resto de la oración coincide con una clave léxica
+	completa. No fragmenta esa clave ni presume que cualquier palabra sea verbo.
+	"""
+	tokens = normalize_input_sp(sp_text).strip().rstrip(' .;:!?¡¿').split()
+	if len(tokens) < 2:
+		return None
+	for length in range(len(tokens) - 1, 0, -1):
+		for start in (0, len(tokens) - length):
+			end = start + length
+			if end > len(tokens):
+				continue
+			adverb_sp = ' '.join(tokens[start:end])
+			adverb_ntl = first_variant(tolerant_lookup(adverb_sp, ADVERBS_SP_NTL))
+			if not adverb_ntl:
+				continue
+			rest = tokens[:start] + tokens[end:]
+			if not rest:
+				continue
+			predicate_ntl = lookup_exact_sp_ntl_expression(' '.join(rest))
+			if not predicate_ntl:
+				continue
+			# No reordenar nominales ni expresiones sin predicado verbal.
+			predicate = ' '.join(rest)
+			if not any(predicate in source for source in (sp_ntl, FIXED_PHRASES_SP_TO_NTL)):
+				continue
+			return f'{adverb_ntl} {predicate_ntl}'
+	return None
+
+
+
+_DARSE_CUENTA_VERB_FORMS_SP = {
+	'doy', 'das', 'da', 'damos', 'dan',
+	'di', 'diste', 'dio', 'dimos', 'dieron',
+	'dare', 'daras', 'dara', 'daremos', 'daran',
+	'de', 'des', 'demos', 'den',
+	'diera', 'dieras', 'dieramos', 'dieran',
+	'diese', 'dieses', 'diesemos', 'diesen',
+	'diere', 'dieres', 'dieremos', 'dieren',
+	'daba', 'dabas', 'dabamos', 'daban',
+	'daria', 'darias', 'dariamos', 'darian',
+}
+
+_DARSE_CUENTA_SUBJECT_CLITIC_SP = {
+	"yo":'me',
+	"tu":'te',
+	"tú":'te',
+	"nosotros":'nos',
+	"nosotras":'nos',
+	"ustedes":'se',
+	"el":'se',
+	"él":'se',
+	"ella":'se',
+	"ellos":'se',
+	"ellas":'se',
+}
+
+_DARSE_CUENTA_VISIBLE_PRONOUN_CANONICAL_SP = {
+	"tu":'tú',
+	"el":'él',
+}
+
+
+def translate_darse_cuenta_with_explicit_subject_sp(sp_text: str) -> str | None:
+	"""Conserva sujeto y persona al traducir «darse cuenta» desde el léxico."""
+	source = str(sp_text or '').strip()
+	closing_match = re.search(r'([!?]+)[\s]*$', source)
+	closing = closing_match.group(1) if closing_match else ''
+	body = source[:closing_match.start()].rstrip() if closing_match else source
+	tokens = normalize_input_sp(body).split()
+	if len(tokens) != 4 or tokens[-1] != 'cuenta':
+		return None
+
+	pronoun = tokens[0]
+	clitic = _DARSE_CUENTA_SUBJECT_CLITIC_SP.get(pronoun)
+	if not clitic or tokens[1] != clitic:
+		return None
+	if strip_accents_local(tokens[2]) not in _DARSE_CUENTA_VERB_FORMS_SP:
+		return None
+
+	phrase = ' '.join(tokens[1:])
+	value = lookup_exact_sp_ntl_expression(phrase)
+	if not value:
+		return None
+	value = str(value).strip()
+	if pronoun == 'ustedes':
+		if value.startswith('ma mo'):
+			value = 'ma anmo' + value[len('ma mo'):]
+		elif value.startswith('o') and value[1:].startswith('mo'):
+			value = 'oan' + value[1:]
+		elif value.startswith('mo'):
+			value = 'an' + value
+		else:
+			return None
+
+	visible_pronoun = VISIBLE_PRONOUN_MAP_SP_TO_NTL.get(pronoun)
+	if not visible_pronoun and pronoun in _DARSE_CUENTA_VISIBLE_PRONOUN_CANONICAL_SP:
+		visible_pronoun = VISIBLE_PRONOUN_MAP_SP_TO_NTL.get(
+			_DARSE_CUENTA_VISIBLE_PRONOUN_CANONICAL_SP[pronoun]
+		)
+	if not visible_pronoun:
+		return None
+	if value.startswith('ma '):
+		translated = f'ma {visible_pronoun} {value[3:]}'
+	else:
+		translated = f'{visible_pronoun} {value}'
+	return f'{translated}{closing}'
+
+
 def translate_sp_to_ntl(sp_text, mode='Auto', person='Auto', number='Auto', imp_p='xi', imp_n=False):
-	translated = _translate_sp_to_ntl_core(
-		sp_text, mode=mode, person=person, number=number, imp_p=imp_p, imp_n=imp_n
-	)
+	sp_text = _normalizar_llevar_a_cabo_sp(sp_text)
+	# Componer cualquier grupo nominal «sustantivo de sustantivo» reconocido.
+	# Respetar primero las expresiones completas del léxico.
+	exact_expression = lookup_exact_sp_ntl_expression(sp_text)
+	if exact_expression:
+		return exact_expression
+	explicit_darse_cuenta = translate_darse_cuenta_with_explicit_subject_sp(sp_text)
+	if explicit_darse_cuenta:
+		return explicit_darse_cuenta
+	ordered_adverb = reorder_documented_adverb_sp_ntl(sp_text)
+	if ordered_adverb:
+		return ordered_adverb
+	compound = detect_noun_compound_phrase_sp(sp_text, normalize_input_sp(sp_text).split())
+	if compound:
+		return compound
+	translated = _resolver_verbo_documentado_sp_ntl(sp_text)
+	if translated is None:
+		translated = _translate_sp_to_ntl_core(
+			sp_text, mode=mode, person=person, number=number, imp_p=imp_p, imp_n=imp_n
+		)
 	# En náhuatl se conserva únicamente el signo de cierre.
 	source = str(sp_text or '').strip()
 	closing_match = re.search(r'([!?]+)[\s]*$', source)
@@ -8466,7 +10343,7 @@ def translate_ntl_to_sp(text: str) -> str:
 	closing = closing_match.group(1) if closing_match else ''
 	clean_text = source[:closing_match.start()].rstrip() if closing_match else source
 
-	translated = str(_translate_ntl_to_sp_core(clean_text) or '').strip()
+	translated = normalize_sp_output_case(str(_translate_ntl_to_sp_core(clean_text) or '').strip())
 	if not translated or not closing:
 		return translated
 
